@@ -1,0 +1,19 @@
+
+.DraftSpace {
+
+    /* display: flex;
+    flex-wrap: wrap; */
+    /* width: 60%;
+    height: 60%; */
+    padding: 10px;
+    overflow: scroll; 
+  }
+
+
+  .DraftContent {
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    outline: none; 
+    /* border: none;  */
+    resize: none;
+}

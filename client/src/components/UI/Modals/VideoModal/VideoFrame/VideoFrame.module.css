@@ -1,0 +1,12 @@
+.VideoFrame {
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+
+    .VideoFrame {
+        width: -webkit-fill-available;
+        display: block; 
+    }
+
+}

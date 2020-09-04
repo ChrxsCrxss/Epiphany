@@ -1,0 +1,10 @@
+I Thinks it's time to consolidate the project. The way forwward will be a monolithic web 
+a deployed on a MERN stack that uses multimedia material, speech-to-text technology, and 
+webscraping on the backend to drive a dynamic philosophical experience. The goal is to 
+get the user to explore their own mind by prompting them with a quote, a passage, a picture
+or a short video. The user can than type, paste, or talk, and the information is displayed
+back to them. 
+
+The two main services offered are: 
+1.) Get article recommendations 
+2.) See is dynamic line-graph visualzing the philosophical catergories to which their ideas correspond.

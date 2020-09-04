@@ -1,0 +1,10 @@
+.Content {
+    margin-top: 72px;
+    color: dodgerblue;
+    padding: 1%; 
+    
+}
+
+.Content:hover {
+    color: tomato;  
+}
