@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import classes from "./RecommendationModal.module.css";
-import Aux from "../../hoc/Aux";
-import Backdrop from "../../UI/Backdrop/Backdrop"; 
+import Aux from "../../../hoc/Aux";
+import Backdrop from "../../../UI/Backdrop/Backdrop"; 
 
 class RecommendationModal extends Component {
 

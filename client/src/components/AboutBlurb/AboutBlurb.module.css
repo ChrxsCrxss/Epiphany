@@ -1,0 +1,12 @@
+.AboutBlurb {
+    width: 80%;
+    text-align: center;
+    text-align: justify;
+    padding: 4%;
+}
+
+@media (min-width: 700px) {
+    .AboutBlurb {
+        width: 600px;
+    }
+}

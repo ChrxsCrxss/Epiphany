@@ -3,7 +3,7 @@ import Aux from "../../hoc/Aux"
 import classes from "./Layout.module.css";
 import Toolbar from "../../Navigation/Toolbar/Toolbar";
 import Footer from "../../Footer/Footer";
-import VideoModal from "../../UI/VideoModal/VideoModal";
+import VideoModal from "../../UI/Modals/VideoModal/VideoModal";
 import InspireButton from "../../UI/Inspire/InspireButton";
 
 
@@ -59,6 +59,7 @@ class Layout extends Component {
                 <main className={classes.Content} >
                     {this.props.children}
 
+                    
                     <InspireButton
                         show={this.toggleVideoModal}
                     />

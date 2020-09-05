@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Aux from "../../hoc/Aux";
 import RecommendationCard from "./RecommendationCard/RecommendationCard";
 import classes from "./RecommendationDeck.module.css";
-import RecommendationModal from "../../UI/RecommendationModal/RecommendationModal";
+import RecommendationModal from "../../UI/Modals/RecommendationModal/RecommendationModal";
 import Spinner from "../../UI/Spinner/Spinner";
 import axios from "axios"; 
 import withErrorHandler from "../../hoc/withErrorHandler"; 
