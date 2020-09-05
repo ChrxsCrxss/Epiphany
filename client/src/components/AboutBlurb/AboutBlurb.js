@@ -44,7 +44,7 @@ const aboutBlurb = (props) => {
 
             <h3> Why did I build this site </h3>
             <p>
-                There is somewhat of a complex answer to this simple question. I'll break it
+                Somewhat of a complex answer to this simple question. I'll break it
                 down into two parts.
             </p>
             <p>

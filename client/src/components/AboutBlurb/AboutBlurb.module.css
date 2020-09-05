@@ -1,8 +1,8 @@
 .AboutBlurb {
     width: 80%;
-    text-align: center;
     text-align: justify;
     padding: 4%;
+    margin: 4% auto;
 }
 
 @media (min-width: 700px) {

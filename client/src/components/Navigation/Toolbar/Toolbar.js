@@ -9,6 +9,7 @@ import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import RemoveRedEyeTwoToneIcon from '@material-ui/icons/RemoveRedEyeTwoTone';
 
 export default class toolbar extends Component {
 
@@ -31,6 +32,8 @@ export default class toolbar extends Component {
         return (
             <header>
                     <Toolbar className={classes.Toolbar}>
+
+                        <RemoveRedEyeTwoToneIcon/>
 
                         <MenuRoundedIcon 
                         aria-controls="simple-menu" 
