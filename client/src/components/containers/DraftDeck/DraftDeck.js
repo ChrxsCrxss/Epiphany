@@ -18,10 +18,14 @@ class DraftDeck extends Component {
     };
 
 
-
-
+    /**
+     * Click-event callback for save button. This method is responsible for lifting the state
+     * of the draft space to App.js, where it is passed the the Diagram mode to create a new
+     * node on the Thought tree
+     */
     draftSavedHandler = () => {
-        alert("Draft Saved!");
+        this.props.liftNewNodeContent(this.state.draftSpaceContent);
+        console.log("Draft Saved!");
     };
 
     draftDeletedHanlder = () => {

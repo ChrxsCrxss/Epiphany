@@ -49,14 +49,15 @@ export default class toolbar extends Component {
                             open={Boolean(this.state.anchorElem)}
                             onClose={this.handleClose}
                         >
-                            <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+                            {/* <MenuItem onClick={this.handleClose}>Profile</MenuItem>
                             <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                            <MenuItem onClick={this.handleClose}>Logout</MenuItem>
+                            <MenuItem onClick={this.handleClose}>Logout</MenuItem> */}
 
                             <Link to="/"><MenuItem>Home</MenuItem></Link>
                             <Link to="/test"><MenuItem>Test</MenuItem></Link>
                             <Link to="/login"><MenuItem>Login</MenuItem></Link>
                             <Link to="/about"><MenuItem>About</MenuItem></Link>
+                            <Link to="/thoughtTree"><MenuItem>ThoughtTree</MenuItem></Link>
                         </Menu>
 
 {/* 
