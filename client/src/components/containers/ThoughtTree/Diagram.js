@@ -6,7 +6,7 @@ import navigator from 'cytoscape-navigator';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Grid from '@material-ui/core/Grid';
 import cytoscapeStylesArray from './CytoscapeStyles'
-import Panel from "../../UI/Panel/Panel"; 
+import Panel from "../../UI/Panel/Panel";
 
 
 cytoscape.use(cxtmenu);
@@ -23,25 +23,16 @@ navigator(cytoscape);
  * (1) Open in panel ( open panel, display text, other info )
  * (2) Add Supporting Ideas ( create green node )
  * (3) Add Opposing Ideas ( create red node )
- * (4) Piggyback off these Ideas ( create no)
+ * (4) Piggyback off these Ideas ( create node )
+ * (5) Print to console
  */
-let defaults = (commands) => {
+
+
+let defaults = (Commands) => {
     return {
         menuRadius: 100, // the radius of the circular menu in pixels
         selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
-        commands: [ // an array of commands to list in the menu or a function that returns the array
-
-            { // example command
-                fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
-                content: 'Print to console', // html/text content to be displayed in the menu
-                contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-                select: (ele) => { // a function to execute when the command is selected
-                    alert('clicked a node:  ' + ele.id()) // `ele` holds the reference to the active element
-                },
-                enabled: true // whether the command is selectable
-            }
-
-        ], // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
+        commands: Commands, // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
         fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
         activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
         activePadding: 20, // additional size in pixels for the active command
@@ -106,8 +97,11 @@ export default class Diagram extends Component {
         panelContent: null,
         showPanel: false,
         mapGridSize: 12,
-        panelGridSize: 5
+        panelGridSize: 5,
+        currentEleInPanel: null, 
     }
+
+    myCyRef = React.createRef(); 
 
 
     componentDidMount() {
@@ -125,9 +119,9 @@ export default class Diagram extends Component {
         }
     };
 
-    nodeClickedHandler = (newPanelContent) => {
+    nodeClickedHandler = (newPanelContent, ele) => {
 
-        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true });
+        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true, currentEleInPanel: ele.id() });
 
     }
 
@@ -135,6 +129,70 @@ export default class Diagram extends Component {
 
         this.setState({ panelContent: null, mapGridSize: 12, showPanel: false });
     }
+
+
+    addNode = (ele) => {
+
+        this.myCyRef.add({
+            group: 'nodes',
+            data: { weight: 75 },
+            position: { x: 300, y: 50 }
+        });
+
+
+    }
+
+
+    /**
+     * Here we define the commands that we pass to the cxtmenu 
+     */
+    printToConsole = {
+        // example command
+        fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
+        content: 'Print to console', // html/text content to be displayed in the menu
+        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+        select: (ele) => { // a function to execute when the command is selected
+            alert('clicked a node:  ' + ele.id()) // `ele` holds the reference to the active element
+        },
+        enabled: true // whether the command is selectable
+    }
+
+    OpenInPanel = {
+        // example command
+        fillColor: 'rgba(200, 200, 100, 0.75)', // optional: custom background color for item
+        content: 'Open in Panel', // html/text content to be displayed in the menu
+        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+        select: (ele) => { // a function to execute when the command is selected
+            console.log('clicked open panel in ctxmenu');
+            this.nodeClickedHandler(ele._private.data.text, ele);
+        },
+        enabled: true // whether the command is selectable
+    }
+
+    AddSupportNode = {
+
+        // example command
+        fillColor: 'rgba(200, 20, 40, 0.75)', // optional: custom background color for item
+        content: 'Add Supporting Ideas', // html/text content to be displayed in the menu
+        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+        select: (ele, cy) => { // a function to execute when the command is selected
+            console.log('clicked add supporting ideas in ctxmenu');
+            this.addNode(ele);
+        },
+        enabled: true // whether the command is selectable
+    }
+
+    /**
+ * the default values of each option are outlined below:
+ * Three commands for the cirle wheel: 
+ * (1) Open in panel ( open panel, display text, other info )
+ * (2) Add Supporting Ideas ( create green node )
+ * (3) Add Opposing Ideas ( create red node )
+ * (4) Piggyback off these Ideas ( create node )
+ * (5) Print to console
+ */
+
+
 
 
 
@@ -180,7 +238,9 @@ export default class Diagram extends Component {
                                 // use extensions by accessing the core object using the cy prop 
                                 cy={cy => {
 
-                                    // cy.cxtmenu(defaults());
+                                    this.myCyRef = cy;
+
+                                    cy.cxtmenu(defaults([this.printToConsole, this.OpenInPanel, this.AddSupportNode]));
 
                                     // cy.layout(options);
 
@@ -195,17 +255,17 @@ export default class Diagram extends Component {
                                     // cy.on() doubles the number of calls to the handler such that on the 5th click 
                                     // on *any* node, the handler would be called 16 times, 32 on the 6th, and so forth. 
                                     // Using cy.one seems to solve the issue. 
-                                    cy.one('tap', 'node', (event) => {
+                                    // cy.one('tap', 'node', (event) => {
 
-                                        const elem = cy.$id(event.target.id());
+                                    //     const elem = cy.$id(event.target.id());
 
-                                        console.log(elem._private.data.text);
+                                    //     console.log(elem._private.data.text);
 
-                                        cy.center(elem); 
+                                    //     cy.center(elem);
 
-                                        this.nodeClickedHandler(elem._private.data.text);
+                                    //     this.nodeClickedHandler(elem._private.data.text);
 
-                                    });
+                                    // });
 
                                 }
                                 }
@@ -217,11 +277,12 @@ export default class Diagram extends Component {
 
                     {this.state.showPanel ?
                         <Grid item sm={this.state.panelGridSize}>
-                        <Panel
-                            title={"Panel"}
-                            content={this.state.panelContent}
-                            close={this.closePanelHandler}
-                        />
+                            <Panel
+                                title={"Panel"}
+                                content={this.state.panelContent}
+                                close={this.closePanelHandler}
+                                ele={this.state.currentEleInPanel}
+                            />
                         </Grid>
                         : null
                     }

@@ -7,6 +7,7 @@ const panel = (props) => {
     return (
         <Card className={classes.Panel}>
             <h4>{props.title}</h4>
+            <h4>Current elem is {props.ele}</h4>
             <p>{props.content}</p>
             <Button
                 variant="contained"

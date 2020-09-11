@@ -49,7 +49,7 @@ export default class App extends Component {
             data: {
                 id: 'three',
                 label: 'Node 3',
-                text: this.state.newNodeContent,
+                text: newNodeContent,
             },
             position: { x: 400, y: 400 }
         }
