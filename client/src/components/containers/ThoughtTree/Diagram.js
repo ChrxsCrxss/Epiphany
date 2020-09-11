@@ -6,11 +6,13 @@ import navigator from 'cytoscape-navigator';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Grid from '@material-ui/core/Grid';
 import cytoscapeStylesArray from './CytoscapeStyles'
+import Panel from "../../UI/Panel/Panel"; 
 
 
 cytoscape.use(cxtmenu);
 
 navigator(cytoscape);
+
 
 
 
@@ -104,7 +106,7 @@ export default class Diagram extends Component {
         panelContent: null,
         showPanel: false,
         mapGridSize: 12,
-        panelGridSize: 4
+        panelGridSize: 5
     }
 
 
@@ -125,8 +127,13 @@ export default class Diagram extends Component {
 
     nodeClickedHandler = (newPanelContent) => {
 
-        this.setState({ panelContent: newPanelContent, mapGridSize: 8, showPanel: true });
+        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true });
 
+    }
+
+    closePanelHandler = () => {
+
+        this.setState({ panelContent: null, mapGridSize: 12, showPanel: false });
     }
 
 
@@ -149,62 +156,72 @@ export default class Diagram extends Component {
 
                     <Grid item sm={this.state.mapGridSize}>
 
-                        <CytoscapeComponent
+                        <Card>
 
-                            // initialize the diagram with data 
-                            elements={CytoscapeComponent.normalizeElements({
-                                nodes: this.props.nodeDataArray,
-                                edges: this.props.linkDataArray
-                            })}
+                            <CytoscapeComponent
 
-                            // style 
-                            style={{ width: '400px', height: '400px', backgroundColor: 'yellow', borderWidth: '3px' }}
+                                // initialize the diagram with data 
+                                elements={CytoscapeComponent.normalizeElements({
+                                    nodes: this.props.nodeDataArray,
+                                    edges: this.props.linkDataArray
+                                })}
+
+                                // style 
+                                style={{
+                                    width: '100%',
+                                    height: '400px',
+                                    backgroundColor: 'yellow',
+                                    borderWidth: '3px',
+                                    boxShadow: '1px 1px 5px #555 inset'
+                                }}
 
 
-                            stylesheet={cytoscapeStylesArray}
-                            // use extensions by accessing the core object using the cy prop 
-                            cy={cy => {
-                                
-                                // cy.cxtmenu(defaults());
+                                stylesheet={cytoscapeStylesArray}
+                                // use extensions by accessing the core object using the cy prop 
+                                cy={cy => {
 
-                                // cy.layout(options);
+                                    // cy.cxtmenu(defaults());
 
-                                // cy.navigator(navdefaults);
-                                
-                                cy.ready(() => console.log('graph is ready'));
+                                    // cy.layout(options);
 
-                                
-                                // Pan the graph to the centre of a collection. If no collection is 
-                                // specified, then the graph is centred on all nodes and edges in the graph.
-                                cy.centre( /* Center of graph */ ); 
+                                    cy.navigator(navdefaults);
 
-                                // tap (click) callback function. I am using cy.one() instead of cy.on() because 
-                                // cy.on() doubles the number of calls to the handler such that on the 5th click 
-                                // on *any* node, the handler would be called 16 times, 32 on the 6th, and so forth. 
-                                // Using cy.one seems to solve the issue. 
-                                cy.one('tap', 'node', (event) => {
 
-                                    const elem = cy.$id(event.target.id());
+                                    // Pan the graph to the centre of a collection. If no collection is 
+                                    // specified, then the graph is centred on all nodes and edges in the graph.
+                                    // cy.centre( /* Center of graph */);
 
-                                    console.log(elem._private.data.text);
+                                    // tap (click) callback function. I am using cy.one() instead of cy.on() because 
+                                    // cy.on() doubles the number of calls to the handler such that on the 5th click 
+                                    // on *any* node, the handler would be called 16 times, 32 on the 6th, and so forth. 
+                                    // Using cy.one seems to solve the issue. 
+                                    cy.one('tap', 'node', (event) => {
 
-                                    this.nodeClickedHandler(elem._private.data.text);
+                                        const elem = cy.$id(event.target.id());
 
-                                });
+                                        console.log(elem._private.data.text);
 
-                            }
-                            }
+                                        cy.center(elem); 
 
-                        />
+                                        this.nodeClickedHandler(elem._private.data.text);
 
+                                    });
+
+                                }
+                                }
+
+                            />
+
+                        </Card>
                     </Grid>
 
                     {this.state.showPanel ?
                         <Grid item sm={this.state.panelGridSize}>
-                            <Card>
-                                <h4>Panel</h4>
-                                <p>{this.state.panelContent}</p>
-                            </Card>
+                        <Panel
+                            title={"Panel"}
+                            content={this.state.panelContent}
+                            close={this.closePanelHandler}
+                        />
                         </Grid>
                         : null
                     }
