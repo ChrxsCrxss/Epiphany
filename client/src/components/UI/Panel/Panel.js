@@ -9,14 +9,19 @@ const panel = (props) => {
             <h4>{props.title}</h4>
             <h4>Current elem is {props.ele}</h4>
             <p>{props.content}</p>
+
+
             <Button
                 variant="contained"
                 color="secondary"
                 size="small"
                 onClick={props.close}
             >
-                Close Panel
+                Close
             </Button>
+
+
+
         </Card>
     )
 }

@@ -4,3 +4,7 @@
     background-color: burlywood; 
     height: 400px;
 }
+
+.Button {
+    padding: 0; 
+}
