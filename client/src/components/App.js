@@ -15,8 +15,8 @@ export default class App extends Component {
     state = {
 
         nodeDataArray: [
-            { data: { id: 'one', label: `Node 1`, text: "Immutable benefits performance here by reducing the total number of diff() calls needed. For example, an unchanged element requires only one diff with Immutable whereas it would require many diffs with the default JSON diff() implementation. Basically, Immutable make diffs minimal-depth searche" }, position: { x: 200, y: 200 } },
-            { data: { id: 'two', label: `Node 2`, text: "I hope this post will be an important milestone in your journey into Functional Programming, as well as a source of information to go back to when needed." }, position: { x: 300, y: 300 } }
+            { data: { id: 'one', label: `Node 1`, text: "Immutable benefits performance here by reducing the total number of diff() calls needed. For example, an unchanged element requires only one diff with Immutable whereas it would require many diffs with the default JSON diff() implementation. Basically, Immutable make diffs minimal-depth searche" }},
+            { data: { id: 'two', label: `Node 2`, text: "I hope this post will be an important milestone in your journey into Functional Programming, as well as a source of information to go back to when needed." }}
         ],
 
         linkDataArray: [

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import Card from '@material-ui/core/Card';
 import cytoscape from 'cytoscape';
 import cxtmenu from 'cytoscape-cxtmenu';
-import navigator from 'cytoscape-navigator';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Grid from '@material-ui/core/Grid';
 import cytoscapeStylesArray from './CytoscapeStyles'
@@ -12,54 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 cytoscape.use(cxtmenu);
 
 
+// Root Thesis
+// Center on Graph
 
 
-
-
-/**
- * the default values of each option are outlined below:
- * Three commands for the cirle wheel: 
- * (1) Open in panel ( open panel, display text, other info )
- * (2) Add Supporting Ideas ( create green node )
- * (3) Add Opposing Ideas ( create red node )
- * (4) Piggyback off these Ideas ( create node )
- * (5) Print to console
- */
-
-
-let options = {
-    name: 'circle',
-
-    fit: true, // whether to fit the viewport to the graph
-    padding: 30, // the padding on fit
-    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-    avoidOverlap: true, // prevents node overlap, may overflow boundingBox and radius if not enough space
-    nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
-    spacingFactor: undefined, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-    radius: undefined, // the radius of the circle
-    startAngle: 3 / 2 * Math.PI, // where nodes start in radians
-    sweep: undefined, // how many radians should be between the first and last node (defaults to full circle)
-    clockwise: true, // whether the layout should go clockwise (true) or counterclockwise/anticlockwise (false)
-    sort: undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
-    animate: false, // whether to transition the node positions
-    animationDuration: 500, // duration of animation in ms if enabled
-    animationEasing: undefined, // easing of animation if enabled
-    animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
-    ready: undefined, // callback on layoutready
-    stop: undefined, // callback on layoutstop
-    transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts 
-
-};
-
-var navdefaults = {
-    container: false // html dom element
-    , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
-    , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
-    , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
-    , dblClickDelay: 200 // milliseconds
-    , removeCustomContainer: true // destroy the container specified by user on plugin destroy
-    , rerenderDelay: 100 // ms to throttle rerender updates to the panzoom for performance
-};
 
 
 export default class Diagram extends Component {
@@ -115,6 +70,14 @@ export default class Diagram extends Component {
 
         this.setState({ cyCoreListeners: this.myCyRef._private.emitter.listeners });
 
+        // this.myCyRef.layout( options ); 
+
+        let layout = this.myCyRef.elements().layout({
+            name: 'breadthfirst'
+        });
+
+        layout.run();
+
 
 
     }
@@ -163,7 +126,6 @@ export default class Diagram extends Component {
         });
 
 
-
         console.log(this.myCyRef);
 
         console.log(this.myCyRef._private.emitter.listeners);
@@ -201,20 +163,54 @@ export default class Diagram extends Component {
             type === 'support' ? 'green' : 'red';
 
         const newNodeID = `node-${uuidv4()}`;
-        const newEdgeID = `edge-${uuidv4()}`;
+        const targetNodePosition = this.myCyRef.$(`#${ele.id()}`).position();
+        // const newNodePosition = {
+        //     x : targetNodePosition.x + 100,
+        //     y : targetNodePosition.y + 100
+        // }
 
         this.myCyRef.add({
             group: 'nodes',
             data: { id: newNodeID, label: 'Node 3' },
-            position: { x: 300, y: 50 }
+            // position: newNodePosition
         });
+
+        const newEdgeID = `edge-${uuidv4()}`;
 
         this.myCyRef.add({
             group: 'edges',
             data: { id: newEdgeID, source: newNodeID, target: ele.id() },
-            position: { x: 300, y: 50 },
             style: { 'line-color': edgeColor }
         });
+
+
+
+
+        // create new layout
+        let layout = this.myCyRef.$().layout({
+            name: 'breadthfirst',
+
+            fit: true, // whether to fit the viewport to the graph
+            directed: false, // whether the tree is directed downwards (or edges can point in any direction if false)
+            padding: 30, // padding on fit
+            circle: false, // put depths in concentric circles if true, put depths top down if false
+            grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
+            spacingFactor: 1.25, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+            avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
+            nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+            roots: undefined, // the roots of the trees
+            maximal: false, // whether to shift nodes down their natural BFS depths in order to avoid upwards edges (DAGS only)
+            animate: true, // whether to transition the node positions
+            animationDuration: 1000, // duration of animation in ms if enabled
+            animationEasing: undefined, // easing of animation if enabled,
+            animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+            ready: undefined, // callback on layoutready
+            stop: undefined, // callback on layoutstop
+            transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
+        });
+
+        layout.run();
 
 
 
@@ -257,7 +253,7 @@ export default class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked open panel in ctxmenu');
-            this.nodeClickedHandler(ele._private.data.text, ele);
+            this.nodeClickedHandler(ele._private.data.text, ele.id());
         },
         enabled: true // whether the command is selectable
     }
@@ -360,30 +356,11 @@ export default class Diagram extends Component {
 
                                     this.myCyRef = cy;
 
-                                    // cy.cxtmenu(this.state.ctxMenuConfiguration);
-
-                                    // cy.layout(options);
 
 
                                     // Pan the graph to the centre of a collection. If no collection is 
                                     // specified, then the graph is centred on all nodes and edges in the graph.
-                                    // cy.centre( /* Center of graph */);
-
-                                    // // tap (click) callback function. I am using cy.one() instead of cy.on() because 
-                                    // // cy.on() doubles the number of calls to the handler such that on the 5th click 
-                                    // // on *any* node, the handler would be called 16 times, 32 on the 6th, and so forth. 
-                                    // // Using cy.one seems to solve the issue. 
-                                    // cy.one('tap', 'node', (event) => {
-
-                                    //     const elem = cy.$id(event.target.id());
-
-                                    //     console.log(elem._private.data.text);
-
-                                    //     cy.center(elem);
-
-                                    //     this.nodeClickedHandler(elem._private.data.text);
-
-                                    // });
+                                    cy.centre( /* Center of graph */);
 
                                 }
                                 }
