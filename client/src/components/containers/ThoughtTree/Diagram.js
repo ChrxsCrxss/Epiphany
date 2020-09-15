@@ -11,7 +11,6 @@ import Panel from "../../UI/Panel/Panel";
 
 cytoscape.use(cxtmenu);
 
-navigator(cytoscape);
 
 
 
@@ -26,28 +25,6 @@ navigator(cytoscape);
  * (4) Piggyback off these Ideas ( create node )
  * (5) Print to console
  */
-
-
-let defaults = (Commands) => {
-    return {
-        menuRadius: 100, // the radius of the circular menu in pixels
-        selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
-        commands: Commands, // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
-        fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
-        activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
-        activePadding: 20, // additional size in pixels for the active command
-        indicatorSize: 24, // the size in pixels of the pointer to the active command
-        separatorWidth: 3, // the empty spacing in pixels between successive commands
-        spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
-        minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
-        maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
-        openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
-        itemColor: 'white', // the colour of text in the command's content
-        itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
-        zIndex: 9999, // the z-index of the ui div
-        atMouse: false // draw menu at mouse position
-    };
-}
 
 
 let options = {
@@ -98,16 +75,89 @@ export default class Diagram extends Component {
         showPanel: false,
         mapGridSize: 12,
         panelGridSize: 5,
-        currentEleInPanel: null, 
+        currentEleInPanel: null,
+        currentThesisNodeID: null,
+        ctxMenuConfiguration: null, 
+        cyCoreListeners: []
     }
 
-    myCyRef = React.createRef(); 
+    myCyRef = React.createRef();
 
+    configureCTXMenu = (Commands) => {
+        const ctxMenuConfiguration = {
+            menuRadius: 100, // the radius of the circular menu in pixels
+            selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
+            commands: Commands, // function( ele ){ return [ /*...*/ ] }, // a function that returns commands or a promise of commands
+            fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
+            activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command
+            activePadding: 20, // additional size in pixels for the active command
+            indicatorSize: 24, // the size in pixels of the pointer to the active command
+            separatorWidth: 3, // the empty spacing in pixels between successive commands
+            spotlightPadding: 4, // extra spacing in pixels between the element and the spotlight
+            minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
+            maxSpotlightRadius: 38, // the maximum radius in pixels of the spotlight
+            openMenuEvents: 'cxttapstart taphold', // space-separated cytoscape events that will open the menu; only `cxttapstart` and/or `taphold` work here
+            itemColor: 'white', // the colour of text in the command's content
+            itemTextShadowColor: 'transparent', // the text shadow colour of the command's content
+            zIndex: 9999, // the z-index of the ui div
+            atMouse: false // draw menu at mouse position
+        };
+
+        this.setState({ ctxMenuConfiguration : ctxMenuConfiguration }); 
+    }
+    
+ 
 
     componentDidMount() {
 
+        const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode]; 
+        this.configureCTXMenu(commands); 
+
+        this.setState({ cyCoreListeners : this.myCyRef._private.emitter.listeners }); 
+
+
 
     }
+
+    componentDidUpdate() {
+
+        /**
+         * Note created on September 14, 2020: 
+         * This is a quick workaround to the issue of the doubling listener calls in the cy model. 
+         * Inspection of the cy object revealed that after each ctxmenu event, duplicate listeners
+         * were pushed to the listeners array. To observe this phenomena, comment out out the 
+         * next three lines and log this.myCyRef._private.emitter.listeners.
+         * 
+         * 
+         * This solution simply empties the listeners array after each ctxmenu event and reconfigures 
+         * the menu with the ctxMenuConfiguration state property.
+         * 
+         * To preserve the default functionality of the core, the listeners on the core are saved 
+         * after the CytoscapeComponent mounts. These listeners are then added back to the core along
+         * with listeners for hte ctxmenu. 
+         * 
+         * This is not the best solution, since it is O(n). But so long as the number of listeners
+         * is small, it should work. This lifecycle props is also a good location to implement dynamic
+         * ctxmenu logic (i.e, special commands for the thesis node). 
+         * 
+         * 
+         * https://stackoverflow.com/questions/59981646/see-the-list-of-event-listeners-currently-attached
+         */
+
+        this.myCyRef._private.emitter.listeners = []; 
+        this.myCyRef._private.emitter.listeners = [...this.state.cyCoreListeners]; 
+
+        this.myCyRef.cxtmenu(this.state.ctxMenuConfiguration);
+
+
+
+        console.log(this.myCyRef); 
+
+        console.log(this.myCyRef._private.emitter.listeners);
+
+        this.render(); 
+    }
+
 
     makeCardInvisible = () => {
         this.setState({ showCard: false });
@@ -131,14 +181,30 @@ export default class Diagram extends Component {
     }
 
 
+
     addNode = (ele) => {
 
         this.myCyRef.add({
             group: 'nodes',
-            data: { weight: 75 },
+            data: { label: 'Node 3' },
             position: { x: 300, y: 50 }
         });
 
+
+    }
+
+    tagThesis = (ele) => {
+
+        if ( this.state.currentThesisNodeID ) {
+            this.myCyRef.$(this.state.currentThesisNodeID).css({backgroundColor : 'white'}); 
+        }
+
+        console.log(ele.id());
+        const eleID = `#${ele.id()}`; 
+
+        this.setState({ currentThesisNodeID: eleID }); 
+
+        this.myCyRef.$(eleID).css({backgroundColor : 'red'});
 
     }
 
@@ -175,11 +241,25 @@ export default class Diagram extends Component {
         fillColor: 'rgba(200, 20, 40, 0.75)', // optional: custom background color for item
         content: 'Add Supporting Ideas', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-        select: (ele, cy) => { // a function to execute when the command is selected
+        select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
             this.addNode(ele);
         },
         enabled: true // whether the command is selectable
+    }
+
+    DesignateAsThesis = {
+
+        // example command
+        fillColor: 'rgba(20, 20, 200, 0.75)', // optional: custom background color for item
+        content: 'Designate as Thesis', // html/text content to be displayed in the menu
+        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+        select: (ele) => { // a function to execute when the command is selected
+            console.log('clicked designate as thesis in ctxmenu');
+            this.tagThesis(ele);
+        },
+        enabled: true // whether the command is selectable
+
     }
 
     /**
@@ -240,11 +320,9 @@ export default class Diagram extends Component {
 
                                     this.myCyRef = cy;
 
-                                    cy.cxtmenu(defaults([this.printToConsole, this.OpenInPanel, this.AddSupportNode]));
+                                    // cy.cxtmenu(this.state.ctxMenuConfiguration);
 
                                     // cy.layout(options);
-
-                                    cy.navigator(navdefaults);
 
 
                                     // Pan the graph to the centre of a collection. If no collection is 
