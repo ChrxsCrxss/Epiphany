@@ -7,7 +7,7 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import Grid from '@material-ui/core/Grid';
 import cytoscapeStylesArray from './CytoscapeStyles'
 import Panel from "../../UI/Panel/Panel";
-
+import { v4 as uuidv4 } from 'uuid';
 
 cytoscape.use(cxtmenu);
 
@@ -77,7 +77,7 @@ export default class Diagram extends Component {
         panelGridSize: 5,
         currentEleInPanel: null,
         currentThesisNodeID: null,
-        ctxMenuConfiguration: null, 
+        ctxMenuConfiguration: null,
         cyCoreListeners: []
     }
 
@@ -103,17 +103,17 @@ export default class Diagram extends Component {
             atMouse: false // draw menu at mouse position
         };
 
-        this.setState({ ctxMenuConfiguration : ctxMenuConfiguration }); 
+        this.setState({ ctxMenuConfiguration: ctxMenuConfiguration });
     }
-    
- 
+
+
 
     componentDidMount() {
 
-        const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode]; 
-        this.configureCTXMenu(commands); 
+        const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
+        this.configureCTXMenu(commands);
 
-        this.setState({ cyCoreListeners : this.myCyRef._private.emitter.listeners }); 
+        this.setState({ cyCoreListeners: this.myCyRef._private.emitter.listeners });
 
 
 
@@ -144,18 +144,31 @@ export default class Diagram extends Component {
          * https://stackoverflow.com/questions/59981646/see-the-list-of-event-listeners-currently-attached
          */
 
-        this.myCyRef._private.emitter.listeners = []; 
-        this.myCyRef._private.emitter.listeners = [...this.state.cyCoreListeners]; 
+        this.myCyRef._private.emitter.listeners = [];
+        this.myCyRef._private.emitter.listeners = [...this.state.cyCoreListeners];
 
         this.myCyRef.cxtmenu(this.state.ctxMenuConfiguration);
 
 
+        this.myCyRef.on('tap', 'node', (event) => {
 
-        console.log(this.myCyRef); 
+            const elem = this.myCyRef.$id(event.target.id());
+
+            console.log(elem._private.data.text);
+
+            this.myCyRef.center(elem);
+
+            // this.nodeClickedHandler(elem._private.data.text, elem.id());
+
+        });
+
+
+
+        console.log(this.myCyRef);
 
         console.log(this.myCyRef._private.emitter.listeners);
 
-        this.render(); 
+        this.render();
     }
 
 
@@ -169,9 +182,9 @@ export default class Diagram extends Component {
         }
     };
 
-    nodeClickedHandler = (newPanelContent, ele) => {
+    nodeClickedHandler = (newPanelContent, eleID) => {
 
-        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true, currentEleInPanel: ele.id() });
+        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true, currentEleInPanel: eleID });
 
     }
 
@@ -182,29 +195,43 @@ export default class Diagram extends Component {
 
 
 
-    addNode = (ele) => {
+    addNode = (ele, type) => {
+
+        const edgeColor =
+            type === 'support' ? 'green' : 'red';
+
+        const newNodeID = `node-${uuidv4()}`;
+        const newEdgeID = `edge-${uuidv4()}`;
 
         this.myCyRef.add({
             group: 'nodes',
-            data: { label: 'Node 3' },
+            data: { id: newNodeID, label: 'Node 3' },
             position: { x: 300, y: 50 }
         });
+
+        this.myCyRef.add({
+            group: 'edges',
+            data: { id: newEdgeID, source: newNodeID, target: ele.id() },
+            position: { x: 300, y: 50 },
+            style: { 'line-color': edgeColor }
+        });
+
 
 
     }
 
     tagThesis = (ele) => {
 
-        if ( this.state.currentThesisNodeID ) {
-            this.myCyRef.$(this.state.currentThesisNodeID).css({backgroundColor : 'white'}); 
+        if (this.state.currentThesisNodeID) {
+            this.myCyRef.$(this.state.currentThesisNodeID).css({ backgroundColor: 'white' });
         }
 
         console.log(ele.id());
-        const eleID = `#${ele.id()}`; 
+        const eleID = `#${ele.id()}`;
 
-        this.setState({ currentThesisNodeID: eleID }); 
+        this.setState({ currentThesisNodeID: eleID });
 
-        this.myCyRef.$(eleID).css({backgroundColor : 'red'});
+        this.myCyRef.$(eleID).css({ backgroundColor: 'red' });
 
     }
 
@@ -225,7 +252,7 @@ export default class Diagram extends Component {
 
     OpenInPanel = {
         // example command
-        fillColor: 'rgba(200, 200, 100, 0.75)', // optional: custom background color for item
+        fillColor: 'rgba(100, 100, 100, 0.75)', // optional: custom background color for item
         content: 'Open in Panel', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
@@ -238,12 +265,25 @@ export default class Diagram extends Component {
     AddSupportNode = {
 
         // example command
-        fillColor: 'rgba(200, 20, 40, 0.75)', // optional: custom background color for item
+        fillColor: 'rgba(20, 200, 40, 0.75)', // optional: custom background color for item
+        content: 'Add Opposing Ideas', // html/text content to be displayed in the menu
+        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
+        select: (ele) => { // a function to execute when the command is selected
+            console.log('clicked add supporting ideas in ctxmenu');
+            this.addNode(ele, 'support');
+        },
+        enabled: true // whether the command is selectable
+    }
+
+    AddOpposeNode = {
+
+        // example command
+        fillColor: 'rgba(200, 20, 20, 0.75)', // optional: custom background color for item
         content: 'Add Supporting Ideas', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele);
+            this.addNode(ele, 'oppose');
         },
         enabled: true // whether the command is selectable
     }
@@ -251,7 +291,7 @@ export default class Diagram extends Component {
     DesignateAsThesis = {
 
         // example command
-        fillColor: 'rgba(20, 20, 200, 0.75)', // optional: custom background color for item
+        fillColor: 'rgba(200, 200, 0, 0.75)', // optional: custom background color for item
         content: 'Designate as Thesis', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
@@ -329,10 +369,10 @@ export default class Diagram extends Component {
                                     // specified, then the graph is centred on all nodes and edges in the graph.
                                     // cy.centre( /* Center of graph */);
 
-                                    // tap (click) callback function. I am using cy.one() instead of cy.on() because 
-                                    // cy.on() doubles the number of calls to the handler such that on the 5th click 
-                                    // on *any* node, the handler would be called 16 times, 32 on the 6th, and so forth. 
-                                    // Using cy.one seems to solve the issue. 
+                                    // // tap (click) callback function. I am using cy.one() instead of cy.on() because 
+                                    // // cy.on() doubles the number of calls to the handler such that on the 5th click 
+                                    // // on *any* node, the handler would be called 16 times, 32 on the 6th, and so forth. 
+                                    // // Using cy.one seems to solve the issue. 
                                     // cy.one('tap', 'node', (event) => {
 
                                     //     const elem = cy.$id(event.target.id());
