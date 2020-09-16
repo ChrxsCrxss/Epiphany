@@ -74,7 +74,7 @@ class Diagram extends Component {
         // Grab thesis
         this.myCyRef.add({
             group: 'nodes',
-            data: { id: 'thesis', label: 'theis', text: this.props.thesis }
+            data: { id: 'thesis', label: 'thesis', text: this.props.thesis }
         });
 
         // // Grab qualifying arguments
@@ -84,13 +84,17 @@ class Diagram extends Component {
 
         // // Grab pro arguments
         for (let i = 0; i < this.props.pro_arguments.length; i++) {
-            this.addNode('thesis', 'support', this.props.con_arguments[i].type)
+            this.addNode('thesis', 'support', this.props.pro_arguments[i].type)
         }
 
         // Grab con arguments 
         for (let i = 0; i < this.props.con_arguments.length; i++) {
             this.addNode('thesis', 'oppose', this.props.con_arguments[i].type)
         }
+
+        // TODO: figure out how to get leaves 
+        const leaves = this.myCyRef.$('#thesis').leaves(); 
+        console.log(`There are ${leaves.length} open threads remaining`); 
 
         // create new layout
         let layout = this.myCyRef.$().layout({
@@ -117,9 +121,6 @@ class Diagram extends Component {
         });
 
         layout.run();
-
-        layout.run();
-
 
     }
 
