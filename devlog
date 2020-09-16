@@ -1,0 +1,12 @@
+
+Sept 15, 2020
+Today, there will be many commits. The work can be broken down 
+into three big tasks: 
+1.) Connect the the signup component to the authentication microservice
+    via axios async calls. 
+    To do this, I need to incorporate Redux and React-Redux into the app
+2.) Connect the draftdeck component to the recommendations microservice
+    via axois async calls. 
+3) Add functionality to the thoughtTree: make nodes editable, format 
+    label, add buttons for centering when panel is open. 
+    Add click-and-drag node creation functionality. 
