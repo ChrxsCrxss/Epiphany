@@ -74,22 +74,27 @@ class Diagram extends Component {
         // Grab thesis
         this.myCyRef.add({
             group: 'nodes',
-            data: { id: 'thesis', label: this.props.thesis.title}
+            data: { 
+                id: 'thesis', 
+                label: this.props.thesis.title,
+                type: this.props.thesis.type,
+                title: this.props.thesis.title,
+                content: this.props.thesis.content}
         });
 
         // // Grab qualifying arguments
         for (let i = 0; i < this.props.qual_arguments.length; i++) {
-            this.addNode('thesis', 'qualify', this.props.qual_arguments[i].title)
+            this.addNode('thesis', 'qualify', this.props.qual_arguments[i])
         }
 
         // // Grab pro arguments
         for (let i = 0; i < this.props.pro_arguments.length; i++) {
-            this.addNode('thesis', 'support', this.props.pro_arguments[i].title)
+            this.addNode('thesis', 'support', this.props.pro_arguments[i])
         }
 
         // Grab con arguments 
         for (let i = 0; i < this.props.con_arguments.length; i++) {
-            this.addNode('thesis', 'oppose', this.props.con_arguments[i].title)
+            this.addNode('thesis', 'oppose', this.props.con_arguments[i])
         }
 
         // TODO: figure out how to get leaves 
@@ -186,9 +191,11 @@ class Diagram extends Component {
         }
     };
 
-    nodeClickedHandler = (newPanelContent, eleID) => {
+    nodeClickedHandler = (newPanelContent, ele) => {
 
-        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true, currentEleInPanel: eleID });
+        console.log('in nodeClickedHandler', ele);
+
+        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true, currentEleInPanel: ele });
 
     }
 
@@ -198,8 +205,15 @@ class Diagram extends Component {
     }
 
 
+    /**
+     * 
+     * @param {*} targetEleID  The id of the node to be added 
+     * @param {string} type 
+     * @param {object} content 
+     */
+    addNode = (targetEleID, type, content) => {
 
-    addNode = (eleID, type, content) => {
+        console.log('in addNode', content);
 
         const edgeColor =
             type === 'support' ? 'green' 
@@ -208,7 +222,7 @@ class Diagram extends Component {
   
 
         const newNodeID = `node-${uuidv4()}`;
-        const targetNodePosition = this.myCyRef.$(`#${eleID}`).position();
+        const targetNodePosition = this.myCyRef.$(`#${targetEleID}`).position();
         // const newNodePosition = {
         //     x : targetNodePosition.x + 100,
         //     y : targetNodePosition.y + 100
@@ -216,7 +230,13 @@ class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'nodes',
-            data: { id: newNodeID, label: content || 'new node' },
+            data: { 
+                id: newNodeID, 
+                label: content.title || 'content',
+                type: content.type,
+                title: content.title,
+                content: content.content
+            },
             // position: newNodePosition
         });
 
@@ -224,7 +244,7 @@ class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'edges',
-            data: { id: newEdgeID, source: newNodeID, target: eleID },
+            data: { id: newEdgeID, source: newNodeID, target: targetEleID },
             style: { 'line-color': edgeColor }
         });
 
@@ -298,7 +318,7 @@ class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked open panel in ctxmenu');
-            this.nodeClickedHandler(ele._private.data.text, ele.id());
+            this.nodeClickedHandler(ele._private.data.text, ele);
         },
         enabled: true // whether the command is selectable
     }
