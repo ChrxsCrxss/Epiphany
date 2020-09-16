@@ -232,7 +232,7 @@ class Diagram extends Component {
             group: 'nodes',
             data: { 
                 id: newNodeID, 
-                label: content.title || 'content',
+                label: content.title,
                 type: content.type,
                 title: content.title,
                 content: content.content
@@ -327,11 +327,16 @@ class Diagram extends Component {
 
         // example command
         fillColor: 'rgba(20, 200, 40, 0.75)', // optional: custom background color for item
-        content: 'Add Opposing Ideas', // html/text content to be displayed in the menu
+        content: 'Defend', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele.id(), 'support');
+            this.addNode(ele.id(), 'support', { 
+                label: 'new node',
+                type: 'pro',
+                title: 'new node title',
+                content: 'new node content'
+            });
         },
         enabled: true // whether the command is selectable
     }
@@ -340,11 +345,16 @@ class Diagram extends Component {
 
         // example command
         fillColor: 'rgba(200, 20, 20, 0.75)', // optional: custom background color for item
-        content: 'Add Supporting Ideas', // html/text content to be displayed in the menu
+        content: 'Attack', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele.id(), 'oppose');
+            this.addNode(ele.id(), 'oppose', { 
+                label: 'new node',
+                type: 'con',
+                title: 'new node title',
+                content: 'new node content'
+            });
         },
         enabled: true // whether the command is selectable
     }
@@ -353,7 +363,7 @@ class Diagram extends Component {
 
         // example command
         fillColor: 'rgba(200, 200, 0, 0.75)', // optional: custom background color for item
-        content: 'Designate as Thesis', // html/text content to be displayed in the menu
+        content: 'Make Thesis', // html/text content to be displayed in the menu
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked designate as thesis in ctxmenu');
