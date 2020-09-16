@@ -6,6 +6,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { connect } from 'react-redux';
 import Card from '@material-ui/core/Card';
+import * as actionTypes from "../../../../store/actions/actions";
 
 class draftSpace extends Component {
 
@@ -25,7 +26,7 @@ class draftSpace extends Component {
         <Select
           labelId="demo-simple-select-placeholder-label-label"
           id="demo-simple-select-placeholder-label"
-          value={this.props.selecedPointType}
+          value={this.props.selecedArgumentType}
           onChange={(event) => this.props.onPointTypeChange(event)}
           displayEmpty
 
@@ -114,20 +115,20 @@ const mapDispatchToProps = dispatch => {
 
     onPointTypeChange: (event) => dispatch(
       {
-        type: 'SELECT_TYPE',
-        pointType: event.target.value
+        type: actionTypes.SELECT_TYPE,
+        argumentType: event.target.value
       }
     ),
 
     onSaveHandler: () => dispatch(
       {
-        type: 'SAVE',
+        type: actionTypes.ADD_ARGUMENT,
       }
     ),
 
     onDraftChange: (event) => dispatch(
       {
-        type: 'UPDATE_DRAFT',
+        type: actionTypes.UPDATE_DRAFT,
         field: event.target.name,
         value: event.target.value
       }
@@ -138,7 +139,7 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    pt_type: state.selectedPointType,
+    pt_type: state.argumentType,
     pro_arguments: state.pro_arguments,
     con_arguments: state.con_arguments,
     qual_arguments: state.qual_arguments,

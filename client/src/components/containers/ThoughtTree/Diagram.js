@@ -74,7 +74,7 @@ class Diagram extends Component {
         // Grab thesis
         this.myCyRef.add({
             group: 'nodes',
-            data: { id: 'thesis', label: 'thesis', text: this.props.thesis }
+            data: { id: 'thesis', label: this.props.thesis.title}
         });
 
         // // Grab qualifying arguments

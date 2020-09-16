@@ -4,7 +4,7 @@ import App from "./components/App"
 
 import { createStore } from "redux"; 
 import { Provider } from "react-redux"; 
-import draftSpaceReducer from "./store/draftspacereducer"; 
+import draftSpaceReducer from "./store/reducers/draftspacereducer"; 
 
 const store = createStore( draftSpaceReducer ); 
 

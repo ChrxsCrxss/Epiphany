@@ -14,8 +14,8 @@ const CytoscapeStylesArray = [
     {
         selector: 'node',
         style: {
-            width: 80,
-            height: 80,
+            width: 120,
+            height: 120,
             shape: 'round-hexagon',
             backgroundColor: 'white',
             borderWidth: 3,
