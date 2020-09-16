@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import cytoscapeStylesArray from './CytoscapeStyles'
 import Panel from "../../UI/Panel/Panel";
 import { v4 as uuidv4 } from 'uuid';
+import { connect } from 'react-redux';
 
 cytoscape.use(cxtmenu);
 
@@ -17,7 +18,7 @@ cytoscape.use(cxtmenu);
 
 
 
-export default class Diagram extends Component {
+class Diagram extends Component {
 
     constructor(props) {
         super(props);
@@ -70,14 +71,54 @@ export default class Diagram extends Component {
 
         this.setState({ cyCoreListeners: this.myCyRef._private.emitter.listeners });
 
-        // this.myCyRef.layout( options ); 
+        // Grab thesis
+        this.myCyRef.add({
+            group: 'nodes',
+            data: { id: 'thesis', label: 'theis', text: this.props.thesis }
+        });
 
-        let layout = this.myCyRef.elements().layout({
-            name: 'breadthfirst'
+        // // Grab qualifying arguments
+        for (let i = 0; i < this.props.qual_arguments.length; i++) {
+            this.addNode('thesis', 'qualify', this.props.qual_arguments[i].type)
+        }
+
+        // // Grab pro arguments
+        for (let i = 0; i < this.props.pro_arguments.length; i++) {
+            this.addNode('thesis', 'support', this.props.con_arguments[i].type)
+        }
+
+        // Grab con arguments 
+        for (let i = 0; i < this.props.con_arguments.length; i++) {
+            this.addNode('thesis', 'oppose', this.props.con_arguments[i].type)
+        }
+
+        // create new layout
+        let layout = this.myCyRef.$().layout({
+            name: 'breadthfirst',
+
+            fit: true, // whether to fit the viewport to the graph
+            directed: false, // whether the tree is directed downwards (or edges can point in any direction if false)
+            padding: 30, // padding on fit
+            circle: false, // put depths in concentric circles if true, put depths top down if false
+            grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
+            spacingFactor: 1.25, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
+            boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
+            avoidOverlap: true, // prevents node overlap, may overflow boundingBox if not enough space
+            nodeDimensionsIncludeLabels: false, // Excludes the label when calculating node bounding boxes for the layout algorithm
+            roots: undefined, // the roots of the trees
+            maximal: false, // whether to shift nodes down their natural BFS depths in order to avoid upwards edges (DAGS only)
+            animate: true, // whether to transition the node positions
+            animationDuration: 1000, // duration of animation in ms if enabled
+            animationEasing: undefined, // easing of animation if enabled,
+            animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
+            ready: undefined, // callback on layoutready
+            stop: undefined, // callback on layoutstop
+            transform: function (node, position) { return position; } // transform a given node position. Useful for changing flow direction in discrete layouts
         });
 
         layout.run();
 
+        layout.run();
 
 
     }
@@ -157,13 +198,16 @@ export default class Diagram extends Component {
 
 
 
-    addNode = (ele, type) => {
+    addNode = (eleID, type, content) => {
 
         const edgeColor =
-            type === 'support' ? 'green' : 'red';
+            type === 'support' ? 'green' 
+            : type === 'oppose' ? 'red'
+            : 'blue'; 
+  
 
         const newNodeID = `node-${uuidv4()}`;
-        const targetNodePosition = this.myCyRef.$(`#${ele.id()}`).position();
+        const targetNodePosition = this.myCyRef.$(`#${eleID}`).position();
         // const newNodePosition = {
         //     x : targetNodePosition.x + 100,
         //     y : targetNodePosition.y + 100
@@ -171,7 +215,7 @@ export default class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'nodes',
-            data: { id: newNodeID, label: 'Node 3' },
+            data: { id: newNodeID, label: content || 'new node' },
             // position: newNodePosition
         });
 
@@ -179,7 +223,7 @@ export default class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'edges',
-            data: { id: newEdgeID, source: newNodeID, target: ele.id() },
+            data: { id: newEdgeID, source: newNodeID, target: eleID },
             style: { 'line-color': edgeColor }
         });
 
@@ -266,7 +310,7 @@ export default class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele, 'support');
+            this.addNode(ele.id(), 'support');
         },
         enabled: true // whether the command is selectable
     }
@@ -279,7 +323,7 @@ export default class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele, 'oppose');
+            this.addNode(ele.id(), 'oppose');
         },
         enabled: true // whether the command is selectable
     }
@@ -336,8 +380,8 @@ export default class Diagram extends Component {
 
                                 // initialize the diagram with data 
                                 elements={CytoscapeComponent.normalizeElements({
-                                    nodes: this.props.nodeDataArray,
-                                    edges: this.props.linkDataArray
+                                    nodes: [],
+                                    edges: []
                                 })}
 
                                 // style 
@@ -392,3 +436,15 @@ export default class Diagram extends Component {
 
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        pro_arguments: state.pro_arguments,
+        con_arguments: state.con_arguments,
+        qual_arguments: state.qual_arguments,
+        thesis: state.thesis
+    };
+};
+
+
+export default connect(mapStateToProps)(Diagram); 
