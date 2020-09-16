@@ -12,7 +12,6 @@ class DraftDeck extends Component {
 
 
     state = {
-        draftSpaceContent: '',
         showRecommendations: false,
         showDashBoard: false
     };
@@ -34,17 +33,6 @@ class DraftDeck extends Component {
 
     toggleTalkModeHandler = () => {
         alert("Switched to talk mode");
-    };
-
-    userTextInputHandler = (event) => {
-
-        // console.log(`In handChange callack`);
-        console.log(event.target.value);
-
-        const newText = event.target.value;
-
-        this.setState({ draftSpaceContent: event.target.value });
-
     };
 
     toggleDashBoard = () => {
@@ -108,10 +96,7 @@ class DraftDeck extends Component {
                 >
 
                     <Grid item sm={gridSize}>
-                        <DraftSpace
-                            handleChange={this.userTextInputHandler}
-                            draftSpaceContent={this.state.draftSpaceContent}
-                        />
+                        <DraftSpace/>
                     </Grid>
 
                     {this.state.showRecommendations ?

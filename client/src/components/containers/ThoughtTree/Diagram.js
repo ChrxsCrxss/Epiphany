@@ -79,17 +79,17 @@ class Diagram extends Component {
 
         // // Grab qualifying arguments
         for (let i = 0; i < this.props.qual_arguments.length; i++) {
-            this.addNode('thesis', 'qualify', this.props.qual_arguments[i].type)
+            this.addNode('thesis', 'qualify', this.props.qual_arguments[i].title)
         }
 
         // // Grab pro arguments
         for (let i = 0; i < this.props.pro_arguments.length; i++) {
-            this.addNode('thesis', 'support', this.props.pro_arguments[i].type)
+            this.addNode('thesis', 'support', this.props.pro_arguments[i].title)
         }
 
         // Grab con arguments 
         for (let i = 0; i < this.props.con_arguments.length; i++) {
-            this.addNode('thesis', 'oppose', this.props.con_arguments[i].type)
+            this.addNode('thesis', 'oppose', this.props.con_arguments[i].title)
         }
 
         // TODO: figure out how to get leaves 

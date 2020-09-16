@@ -9,14 +9,6 @@ import Card from '@material-ui/core/Card';
 
 class draftSpace extends Component {
 
-
-  state = {
-    selecedPointType: null,
-    pro_arguments: [],
-    con_arguments: [],
-    qualifications: []
-  };
-
   handleSubmit = (event) => {
     event.preventDefault();
 
@@ -55,6 +47,9 @@ class draftSpace extends Component {
           <form>
             <textarea
               placeholder="Title"
+              name='title'
+              value={this.props.title}
+              onChange={(event) => this.props.onDraftChange(event)}
             />
           </form>
 
@@ -63,56 +58,44 @@ class draftSpace extends Component {
           <form>
             <textarea
               className={classes.DraftContent}
-              onChange={this.props.handleChange}
-              placeholder="Type or Copy/Paste your text here!"
-              value={this.props.draftSpaceContent}
-
+              onChange={(event) => this.props.onDraftChange(event)}
+              placeholder="Content: text or paste your argument here!"
+              value={this.props.content}
+              name='content'
             />
           </form>
 
         </Paper>
 
-        {this.props.thesis !== null ?
-          <Card>
-            <h6>Thesis</h6>
-            <p> {this.props.thesis} </p>
+        { Object.keys(this.props.thesis).length === 0 && this.props.thesis.constructor === Object ?
+           <h5 style={{ color: 'red' }}> You don't have a thesis! </h5>
+          : <Card>
+            <h6>{this.props.thesis.type}</h6>
+            <h6>{this.props.thesis.title}</h6>
+            <p> {this.props.thesis.content} </p>
           </Card>
-          : <h5 style={{color : 'red'}}> You don't have a thesis! </h5>
-
         }
 
         {this.props.pro_arguments.map(point => {
           return <Card>
             <h6>{point.type}</h6>
-            <p> This is a pro argument: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+            <h6>{point.title}</h6>
+            <p>{point.content}</p>
           </Card>
         })}
         {this.props.con_arguments.map(point => {
           return <Card>
             <h6>{point.type}</h6>
-            <p> This is a con argument: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+            <h6>{point.title}</h6>
+            <p>{point.content}</p>
           </Card>
         })}
 
         {this.props.qual_arguments.map(point => {
           return <Card>
             <h6>{point.type}</h6>
-            <p> This is a qualifying argument: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-            minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+            <h6>{point.title}</h6>
+            <p>{point.content}</p>
           </Card>
         })}
       </div>
@@ -136,9 +119,17 @@ const mapDispatchToProps = dispatch => {
       }
     ),
 
-    onSaveHandler: (event) => dispatch(
+    onSaveHandler: () => dispatch(
       {
         type: 'SAVE',
+      }
+    ),
+
+    onDraftChange: (event) => dispatch(
+      {
+        type: 'UPDATE_DRAFT',
+        field: event.target.name,
+        value: event.target.value
       }
     )
   };
@@ -151,7 +142,9 @@ const mapStateToProps = state => {
     pro_arguments: state.pro_arguments,
     con_arguments: state.con_arguments,
     qual_arguments: state.qual_arguments,
-    thesis: state.thesis
+    thesis: state.thesis,
+    title: state.title,
+    content: state.content
   };
 };
 
