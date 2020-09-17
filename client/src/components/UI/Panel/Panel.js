@@ -24,9 +24,10 @@ class Panel extends Component {
         }
     }
 
+
     onChangeHandler = (event) => {
 
-        console.log(event);
+        console.log(this.props.ele);
 
         console.log(this.state.cachedArgument);
         console.log(this.state.updatedArgument);
@@ -57,7 +58,12 @@ class Panel extends Component {
                 prevState.editMode ?
                     { editMode: !false }
                     : {
-                        editMode: true, cachedArgument: {
+                        editMode: true, 
+                        cachedArgument: {
+                            title: this.props.ele._private.data.title,
+                            content: this.props.ele._private.data.title
+                        },
+                        updatedArgument: {
                             title: this.props.ele._private.data.title,
                             content: this.props.ele._private.data.title
                         }
@@ -65,6 +71,18 @@ class Panel extends Component {
             )
         })
     };
+
+    onSaveHandlerWrapper = () => {
+
+        const ele = {
+            id: this.state.updatedArgument.id,
+            type: this.props.ele._private.data.type,
+            title: this.state.updatedArgument.title
+        }
+
+        console.log('onSaveHandlerWrapper: ', ele); 
+        this.props.onSaveHandler({...ele}, {...this.state.updatedArgument}); 
+    }
 
 
 
@@ -77,12 +95,12 @@ class Panel extends Component {
                     <form>
                         <textarea
                             name='title'
-                            value={this.props.ele._private.data.title}
+                            value={this.state.updatedArgument.title}
                             onChange={(event) => this.onChangeHandler(event)}>
                         </textarea>
                         <textarea
                             name='content'
-                            value={this.props.ele._private.data.content}
+                            value={this.state.updatedArgument.content}
                             onChange={(event) => this.onChangeHandler(event)}>
                         </textarea>
 
@@ -104,7 +122,9 @@ class Panel extends Component {
                     onClick={this.toggleEditMode}>
                     <EditIcon />
                 </IconButton>
-                <IconButton aria-label="delete">
+                <IconButton 
+                aria-label="delete"
+                onClick={this.onSaveHandlerWrapper}>
                     <ReplayIcon />
                 </IconButton>
                 <IconButton aria-label="delete">
@@ -140,9 +160,16 @@ const matchDispatchToProps = dispatch => {
         /**
          * @param {object} updatedArgument The object holding updated values
          */
-        onSaveHandler: (updatedArgument) => dispatch(
+        onSaveHandler: (ele, updatedArgument) => dispatch(
             {
-                type: actionTypes.ADD_ARGUMENT,
+                type: actionTypes.UPDATE_ARGUMENT,
+                targetArgumentId: ele.id,
+                updatedArgumentType: ele.type,
+                updatedArgument: {
+                    id: ele.id,
+                    type: ele.type,
+                    ...updatedArgument
+                }
             }
         )
 
@@ -150,4 +177,6 @@ const matchDispatchToProps = dispatch => {
 
 }
 
-export default Panel; 
+// If you want to use mapDispatchToProps without a 
+// mapStateToProps just use null for the first argument.
+export default connect(null, matchDispatchToProps)(Panel); 

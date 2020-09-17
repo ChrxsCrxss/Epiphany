@@ -41,7 +41,7 @@ class Diagram extends Component {
 
     myCyRef = React.createRef();
 
-    componentDidMount() {
+    async componentDidMount() {
 
         const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
 
@@ -55,7 +55,7 @@ class Diagram extends Component {
         this.myCyRef.add({
             group: 'nodes',
             data: {
-                id: 'thesis',
+                id: this.props.thesis.id,
                 label: this.props.thesis.title,
                 type: this.props.thesis.type,
                 title: this.props.thesis.title,
@@ -63,29 +63,32 @@ class Diagram extends Component {
             }
         });
 
-        // // Grab qualifying arguments
-        for (let i = 0; i < this.props.qual_arguments.length; i++) {
-            this.addNode('thesis', 'qualify', this.props.qual_arguments[i])
-        }
+        await this.setState({ currentThesisNodeID: this.props.thesis.id }, () => {
 
-        // // Grab pro arguments
-        for (let i = 0; i < this.props.pro_arguments.length; i++) {
-            this.addNode('thesis', 'support', this.props.pro_arguments[i])
-        }
+            // // Grab qualifying arguments
+            for (let i = 0; i < this.props.qual_arguments.length; i++) {
+                this.addNode(this.state.currentThesisNodeID, 'qualify', this.props.qual_arguments[i])
+            }
 
-        // Grab con arguments 
-        for (let i = 0; i < this.props.con_arguments.length; i++) {
-            this.addNode('thesis', 'oppose', this.props.con_arguments[i])
-        }
+            // // Grab pro arguments
+            for (let i = 0; i < this.props.pro_arguments.length; i++) {
+                this.addNode(this.state.currentThesisNodeID, 'support', this.props.pro_arguments[i])
+            }
 
-        // TODO: figure out how to get leaves 
-        const leaves = this.myCyRef.$('#thesis').leaves();
-        console.log(`There are ${leaves.length} open threads remaining`);
+            // Grab con arguments 
+            for (let i = 0; i < this.props.con_arguments.length; i++) {
+                this.addNode(this.state.currentThesisNodeID, 'oppose', this.props.con_arguments[i])
+            }
 
-        // create new layout
-        let layout = this.myCyRef.$().layout(graphLayoutOptions);
+            // TODO: figure out how to get leaves 
+            const leaves = this.myCyRef.$('#thesis').leaves();
+            console.log(`There are ${leaves.length} open threads remaining`);
 
-        layout.run();
+            // create new layout
+            let layout = this.myCyRef.$().layout(graphLayoutOptions);
+
+            layout.run();
+        });
 
     }
 
@@ -154,7 +157,8 @@ class Diagram extends Component {
         this.setState({ panelContent: null, mapGridSize: 12, showPanel: false });
     }
 
-
+    // IMPORTANT: to enable in-panel editing, we must also update the store with 
+    // the new argument when we add a new node. 
     /**
      * 
      * @param {*} targetEleID  The id of the node to be added 
@@ -170,13 +174,13 @@ class Diagram extends Component {
                 : type === 'oppose' ? 'red'
                     : 'blue';
 
-        const newNodeID = content.id || uuidv4(); 
+        const newNodeID = content.id || uuidv4();
         this.myCyRef.add({
             group: 'nodes',
             data: {
                 id: newNodeID,
                 label: content.title || 'Add label by adding a title',
-                type: content.type ,
+                type: content.type,
                 title: content.title || 'Add title',
                 content: content.content || 'Add content'
             },
@@ -254,7 +258,7 @@ class Diagram extends Component {
             console.log('clicked add supporting ideas in ctxmenu');
             this.addNode(ele.id(), 'support', {
                 label: 'new node',
-                type: 'pro',
+                type: 'pro_arguments',
                 title: 'new node title',
                 content: 'new node content'
             });
@@ -272,7 +276,7 @@ class Diagram extends Component {
             console.log('clicked add supporting ideas in ctxmenu');
             this.addNode(ele.id(), 'oppose', {
                 label: 'new node',
-                type: 'con',
+                type: 'con_arguments',
                 title: 'new node title',
                 content: 'new node content'
             });
