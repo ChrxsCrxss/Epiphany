@@ -56,7 +56,7 @@ class Panel extends Component {
 
             return (
                 prevState.editMode ?
-                    { editMode: !false }
+                    { editMode: false }
                     : {
                         editMode: true, 
                         cachedArgument: {
@@ -72,16 +72,18 @@ class Panel extends Component {
         })
     };
 
-    onSaveHandlerWrapper = () => {
+    onSaveHandlerWrapper = async () => {
 
         const ele = {
-            id: this.state.updatedArgument.id,
+            id: this.props.ele._private.data.id,
             type: this.props.ele._private.data.type,
             title: this.state.updatedArgument.title
         }
 
         console.log('onSaveHandlerWrapper: ', ele); 
-        this.props.onSaveHandler({...ele}, {...this.state.updatedArgument}); 
+        const response = await this.props.onSaveHandler({...ele}, {...this.state.updatedArgument}); 
+
+        this.props.onEditUpdate(ele.id, ele.type); 
     }
 
 

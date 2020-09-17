@@ -41,7 +41,7 @@ class Diagram extends Component {
 
     myCyRef = React.createRef();
 
-    async componentDidMount() {
+    componentDidMount() {
 
         const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
 
@@ -63,32 +63,56 @@ class Diagram extends Component {
             }
         });
 
-        await this.setState({ currentThesisNodeID: this.props.thesis.id }, () => {
+        this.setState({ currentThesisNodeID: this.props.thesis.id }, () => this.loadNodes() ) ;
 
-            // // Grab qualifying arguments
-            for (let i = 0; i < this.props.qual_arguments.length; i++) {
-                this.addNode(this.state.currentThesisNodeID, 'qualify', this.props.qual_arguments[i])
+    }
+
+    // refactor method to reduce repetition and remove two other functions 
+    loadNodes = () => {
+
+        // // Grab qualifying arguments
+        for (let i = 0; i < this.props.qual_arguments.length; i++) {
+            this.addNode(this.state.currentThesisNodeID, 'qualify', this.props.qual_arguments[i])
+        }
+        // // Grab pro arguments
+        for (let i = 0; i < this.props.pro_arguments.length; i++) {
+            this.addNode(this.state.currentThesisNodeID, 'support', this.props.pro_arguments[i])
+        }
+        // Grab con arguments 
+        for (let i = 0; i < this.props.con_arguments.length; i++) {
+            this.addNode(this.state.currentThesisNodeID, 'oppose', this.props.con_arguments[i])
+        }
+
+
+        // TODO: figure out how to get leaves 
+        const leaves = this.myCyRef.$('#thesis').leaves();
+        console.log(`There are ${leaves.length} open threads remaining`);
+
+        // create new layout
+        let layout = this.myCyRef.$().layout(graphLayoutOptions);
+
+        layout.run();
+    }
+
+
+    
+    /**
+     * 
+     * @param {*} id The id associated with the argument node that is being updated
+     * @param {string} type The type of argument being updated. Used to traverse the correct array. 
+     */
+    updateNode = (id, type) => {
+
+        for (const argument of this.props[type]) {
+            if (id === argument.id) {
+                this.myCyRef.$(`#${id}`).data({
+                    label: argument.title,
+                    type: argument.type,
+                    title: argument.title,
+                    content: argument.content
+                });
             }
-
-            // // Grab pro arguments
-            for (let i = 0; i < this.props.pro_arguments.length; i++) {
-                this.addNode(this.state.currentThesisNodeID, 'support', this.props.pro_arguments[i])
-            }
-
-            // Grab con arguments 
-            for (let i = 0; i < this.props.con_arguments.length; i++) {
-                this.addNode(this.state.currentThesisNodeID, 'oppose', this.props.con_arguments[i])
-            }
-
-            // TODO: figure out how to get leaves 
-            const leaves = this.myCyRef.$('#thesis').leaves();
-            console.log(`There are ${leaves.length} open threads remaining`);
-
-            // create new layout
-            let layout = this.myCyRef.$().layout(graphLayoutOptions);
-
-            layout.run();
-        });
+        }
 
     }
 
@@ -148,7 +172,11 @@ class Diagram extends Component {
 
         console.log('in nodeClickedHandler', ele);
 
-        this.setState({ panelContent: newPanelContent, mapGridSize: 7, showPanel: true, currentEleInPanel: ele });
+        this.setState({
+            panelContent: newPanelContent,
+            mapGridSize: 7, showPanel: true,
+            currentEleInPanel: ele
+        });
 
     }
 
@@ -174,11 +202,10 @@ class Diagram extends Component {
                 : type === 'oppose' ? 'red'
                     : 'blue';
 
-        const newNodeID = content.id || uuidv4();
         this.myCyRef.add({
             group: 'nodes',
             data: {
-                id: newNodeID,
+                id: content.id,
                 label: content.title || 'Add label by adding a title',
                 type: content.type,
                 title: content.title || 'Add title',
@@ -190,7 +217,7 @@ class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'edges',
-            data: { id: newEdgeID, source: newNodeID, target: targetEleID },
+            data: { id: newEdgeID, source: content.id, target: targetEleID },
             style: { 'line-color': edgeColor }
         });
 
@@ -339,6 +366,7 @@ class Diagram extends Component {
                                 content={this.state.panelContent}
                                 close={this.closePanelHandler}
                                 ele={this.state.currentEleInPanel}
+                                onEditUpdate={this.updateNode }
                             />
                         </Grid>
                         : null
