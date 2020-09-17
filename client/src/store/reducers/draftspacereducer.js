@@ -28,6 +28,28 @@ const draftSpaceReducer = (state = initialState, action) => {
                 [action.field]: action.value
             }
             break;
+
+        case actionTypes.UPDATE_ARGUMENT:
+
+            return {
+                ...state,
+                [action.updateArgumentType] : state[action.updateArgumentType].map(argument => {
+
+                    // If the argument object's id does not match the target id,
+                    // simply return that object unaltered 
+                    if (argument.id !== action.targetArgumentId) {
+                        return
+                    }
+
+                    // If the argument object's id does match the target id,
+                    // replace the entire object with the new updatedArgument 
+                    return {
+                        ...action.updatedArgument
+                    }
+                })
+            };
+
+            break; 
         case actionTypes.ADD_ARGUMENT:
 
             const newState =

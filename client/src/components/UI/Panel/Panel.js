@@ -6,34 +6,88 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
+import { connect } from 'react-redux';
+import * as actionTypes from '../../../store/actions/actions'
+
 
 class Panel extends Component {
 
     state = {
-        editMode: false
+        editMode: false,
+        cachedArgument: {
+            title: '',
+            content: ''
+        },
+        updatedArgument: {
+            title: '',
+            content: ''
+        }
     }
 
+    onChangeHandler = (event) => {
 
-    toggleEditMode = (event) => {
-        event.preventDefault();
+        console.log(event);
+
+        console.log(this.state.cachedArgument);
+        console.log(this.state.updatedArgument);
+
+        // To access the event asynchronously in the setState callback,
+        // we must remove the synthetic event from the pool.
+        // From more info: https://reactjs.org/docs/events.html#event-pooling
+        event.persist();
         this.setState(prevState => {
-            return { editMode: !prevState.editMode }
+
+            return {
+                updatedArgument: {
+                    ...prevState.updatedArgument,
+                    [event.target.name]: event.target.value
+                }
+            };
+
+        });
+
+    };
+
+
+    toggleEditMode = () => {
+
+        this.setState(prevState => {
+
+            return (
+                prevState.editMode ?
+                    { editMode: !false }
+                    : {
+                        editMode: true, cachedArgument: {
+                            title: this.props.ele._private.data.title,
+                            content: this.props.ele._private.data.title
+                        }
+                    }
+            )
         })
     };
+
+
 
     render() {
 
         const content =
             this.state.editMode ? (
-                <React.Fragment>
+                <div>
                     <h4>{this.props.ele._private.data.type}</h4>
-                    <textarea
-                        value={this.props.ele._private.data.title}>
-                    </textarea>
-                    <textarea
-                        value={this.props.ele._private.data.content}>
-                    </textarea>
-                </React.Fragment>
+                    <form>
+                        <textarea
+                            name='title'
+                            value={this.props.ele._private.data.title}
+                            onChange={(event) => this.onChangeHandler(event)}>
+                        </textarea>
+                        <textarea
+                            name='content'
+                            value={this.props.ele._private.data.content}
+                            onChange={(event) => this.onChangeHandler(event)}>
+                        </textarea>
+
+                    </form>
+                </div>
             )
                 : (
                     <React.Fragment>
@@ -47,7 +101,7 @@ class Panel extends Component {
             <Card className={classes.Panel}>
                 <IconButton
                     aria-label="delete"
-                    onClick={(event) => this.toggleEditMode(event)}>
+                    onClick={this.toggleEditMode}>
                     <EditIcon />
                 </IconButton>
                 <IconButton aria-label="delete">
@@ -71,12 +125,29 @@ class Panel extends Component {
                 </Button>
                 </div>
 
-            </Card >
+            </Card>
         )
 
 
 
     }
+}
+
+const matchDispatchToProps = dispatch => {
+
+    return {
+
+        /**
+         * @param {object} updatedArgument The object holding updated values
+         */
+        onSaveHandler: (updatedArgument) => dispatch(
+            {
+                type: actionTypes.ADD_ARGUMENT,
+            }
+        )
+
+    }
+
 }
 
 export default Panel; 
