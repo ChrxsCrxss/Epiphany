@@ -4,12 +4,13 @@ import cytoscape from 'cytoscape';
 import cxtmenu from 'cytoscape-cxtmenu';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Grid from '@material-ui/core/Grid';
-import cytoscapeStylesArray from './CytoscapeStyles'
+import * as cyStyles from './CytoscapeStyles'
 import Panel from "../../UI/Panel/Panel";
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
-import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration"; 
+import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";
 import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
+import classes from './Diagram.module.css';
 
 
 cytoscape.use(cxtmenu);
@@ -46,7 +47,7 @@ class Diagram extends Component {
 
         const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
 
-        const ctxMenuConfigObjectWithCmds = { ...ctxMenuConfigObject, commands : commands }; 
+        const ctxMenuConfigObjectWithCmds = { ...ctxMenuConfigObject, commands: commands };
 
         this.setState({ ctxMenuConfiguration: ctxMenuConfigObjectWithCmds });
 
@@ -55,12 +56,13 @@ class Diagram extends Component {
         // Grab thesis
         this.myCyRef.add({
             group: 'nodes',
-            data: { 
-                id: 'thesis', 
+            data: {
+                id: 'thesis',
                 label: this.props.thesis.title,
                 type: this.props.thesis.type,
                 title: this.props.thesis.title,
-                content: this.props.thesis.content}
+                content: this.props.thesis.content
+            }
         });
 
         // // Grab qualifying arguments
@@ -79,11 +81,11 @@ class Diagram extends Component {
         }
 
         // TODO: figure out how to get leaves 
-        const leaves = this.myCyRef.$('#thesis').leaves(); 
-        console.log(`There are ${leaves.length} open threads remaining`); 
+        const leaves = this.myCyRef.$('#thesis').leaves();
+        console.log(`There are ${leaves.length} open threads remaining`);
 
         // create new layout
-        let layout = this.myCyRef.$().layout( graphLayoutOptions );
+        let layout = this.myCyRef.$().layout(graphLayoutOptions);
 
         layout.run();
 
@@ -176,17 +178,17 @@ class Diagram extends Component {
         console.log('in addNode', content);
 
         const edgeColor =
-            type === 'support' ? 'green' 
-            : type === 'oppose' ? 'red'
-            : 'blue'; 
-  
+            type === 'support' ? 'green'
+                : type === 'oppose' ? 'red'
+                    : 'blue';
+
 
         const newNodeID = `node-${uuidv4()}`;
 
         this.myCyRef.add({
             group: 'nodes',
-            data: { 
-                id: newNodeID, 
+            data: {
+                id: newNodeID,
                 label: content.title,
                 type: content.type,
                 title: content.title,
@@ -206,7 +208,7 @@ class Diagram extends Component {
 
 
         // create new layout
-        let layout = this.myCyRef.$().layout( graphLayoutOptions );
+        let layout = this.myCyRef.$().layout(graphLayoutOptions);
         layout.run();
 
 
@@ -263,7 +265,7 @@ class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele.id(), 'support', { 
+            this.addNode(ele.id(), 'support', {
                 label: 'new node',
                 type: 'pro',
                 title: 'new node title',
@@ -281,7 +283,7 @@ class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele.id(), 'oppose', { 
+            this.addNode(ele.id(), 'oppose', {
                 label: 'new node',
                 type: 'con',
                 title: 'new node title',
@@ -340,38 +342,22 @@ class Diagram extends Component {
                         <Card>
 
                             <CytoscapeComponent
+                                style={cyStyles.cyStyle}
+                                stylesheet={cyStyles.eleStyles}
 
-                                // initialize the diagram with data 
-                                elements={CytoscapeComponent.normalizeElements({
-                                    nodes: [],
-                                    edges: []
-                                })}
+                                // The default action of the cytoscape package seems to be to place two
+                                // nodes in the graph if no application data is provided. This call to
+                                // normalizeElements prevents that action. 
+                                elements={CytoscapeComponent.normalizeElements({ nodes: [], edges: [] })}
 
-                                // style 
-                                style={{
-                                    width: '100%',
-                                    height: '400px',
-                                    backgroundColor: 'yellow',
-                                    borderWidth: '3px',
-                                    boxShadow: '1px 1px 5px #555 inset'
-                                }}
-
-
-                                stylesheet={cytoscapeStylesArray}
                                 // use extensions by accessing the core object using the cy prop 
                                 cy={cy => {
 
                                     this.myCyRef = cy;
-
-
-
                                     // Pan the graph to the centre of a collection. If no collection is 
                                     // specified, then the graph is centred on all nodes and edges in the graph.
                                     cy.centre( /* Center of graph */);
-
-                                }
-                                }
-
+                                }}
                             />
 
                         </Card>

@@ -10,7 +10,7 @@
  * selector: 'node'
  * style: { classes.Node }
  */
-const CytoscapeStylesArray = [
+export const eleStyles = [
     {
         selector: 'node',
         style: {
@@ -45,4 +45,12 @@ const CytoscapeStylesArray = [
     },
 ]
 
-export default CytoscapeStylesArray; 
+export const cyStyle = {
+    width: '100%',
+    height: '400px',
+    backgroundColor: 'yellow',
+    borderWidth: '3px',
+    boxShadow: '1px 1px 5px #555 inset'
+}
+
+ 
