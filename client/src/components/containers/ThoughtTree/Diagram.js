@@ -29,8 +29,6 @@ class Diagram extends Component {
     }
 
     state = {
-        showCard: false,
-        cardContent: null,
         panelContent: null,
         showPanel: false,
         mapGridSize: 12,
@@ -142,16 +140,6 @@ class Diagram extends Component {
         this.render();
     }
 
-
-    makeCardInvisible = () => {
-        this.setState({ showCard: false });
-    }
-
-    makeCardVisible = (newCardContent) => {
-        if (!this.state.showCard) {
-            this.setState({ cardContent: newCardContent, showCard: true });
-        }
-    };
 
     nodeClickedHandler = (newPanelContent, ele) => {
 
@@ -328,19 +316,10 @@ class Diagram extends Component {
         return (
 
             <React.Fragment>
-
-
-                {this.state.showCard ?
-                    <Card>{this.state.cardContent}</Card>
-                    : null}
-
                 <Grid container direction="row">
-
-
                     <Grid item sm={this.state.mapGridSize}>
 
                         <Card>
-
                             <CytoscapeComponent
                                 style={cyStyles.cyStyle}
                                 stylesheet={cyStyles.eleStyles}
@@ -359,7 +338,6 @@ class Diagram extends Component {
                                     cy.centre( /* Center of graph */);
                                 }}
                             />
-
                         </Card>
                     </Grid>
 
@@ -376,13 +354,8 @@ class Diagram extends Component {
                     }
 
                 </Grid>
-
-
             </React.Fragment>
-
-
         )
-
     }
 }
 
