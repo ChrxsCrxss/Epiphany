@@ -5,7 +5,7 @@ import cxtmenu from 'cytoscape-cxtmenu';
 import CytoscapeComponent from 'react-cytoscapejs';
 import Grid from '@material-ui/core/Grid';
 import * as cyStyles from './CytoscapeStyles'
-import Panel from "../../UI/Panel/Panel";
+import Panel from "../../components/UI/Panel/Panel";
 import { v4 as uuidv4 } from 'uuid';
 import { connect } from 'react-redux';
 import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";

@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import Aux from "../../hoc/Aux"
+import Aux from "../../components/hoc/Aux"
 import classes from "./Layout.module.css";
-import Toolbar from "../../Navigation/Toolbar/Toolbar";
-import Footer from "../../Footer/Footer";
-import VideoModal from "../../UI/Modals/VideoModal/VideoModal";
-import InspireButton from "../../UI/Inspire/InspireButton";
+import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
+import Footer from "../../components/Footer/Footer";
+import VideoModal from "../../components/UI/Modals/VideoModal/VideoModal";
+import InspireButton from "../../components/UI/Inspire/InspireButton";
 
 
 // The Layout class component is a high-order component that wraps the 

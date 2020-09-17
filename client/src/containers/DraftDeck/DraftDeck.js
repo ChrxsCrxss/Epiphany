@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Card from '@material-ui/core/Card';
 import DraftSpace from "./DraftSpace/Draftspace";
 import classes from "./DraftDeck.module.css";
-import Aux from "../../hoc/Aux";
+import Aux from "../../components/hoc/Aux";
 import DraftDeckControls from "./DraftDeckControls/DrafDeckControls";
 import Grid from '@material-ui/core/Grid';
 import RecommendationDeck from "../RecommendationDeck/RecommendationDeck";

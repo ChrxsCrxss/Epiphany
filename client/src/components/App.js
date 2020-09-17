@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import DraftDeck from "../components/containers/DraftDeck/DraftDeck";
+import DraftDeck from "../containers/DraftDeck/DraftDeck";
 import AboutBlurb from "./AboutBlurb/AboutBlurb";
-import Layout from "../components/containers/Layout/Layout";
+import Layout from "../containers/Layout/Layout";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router-dom";
-import Diagram from "./containers/ThoughtTree/Diagram.js";
-import SignUp from "./containers/Authentication/SignUp/SignUp"; 
+import Diagram from "../containers/ThoughtTree/Diagram.js";
+import SignUp from "../containers/Authentication/SignUp/SignUp"; 
 
 // The app container returns the draft-space (user input area),
 // wrapped in the high-order Layout Component. 
