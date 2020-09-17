@@ -182,11 +182,6 @@ class Diagram extends Component {
   
 
         const newNodeID = `node-${uuidv4()}`;
-        const targetNodePosition = this.myCyRef.$(`#${targetEleID}`).position();
-        // const newNodePosition = {
-        //     x : targetNodePosition.x + 100,
-        //     y : targetNodePosition.y + 100
-        // }
 
         this.myCyRef.add({
             group: 'nodes',
@@ -197,7 +192,6 @@ class Diagram extends Component {
                 title: content.title,
                 content: content.content
             },
-            // position: newNodePosition
         });
 
         const newEdgeID = `edge-${uuidv4()}`;
@@ -213,7 +207,6 @@ class Diagram extends Component {
 
         // create new layout
         let layout = this.myCyRef.$().layout( graphLayoutOptions );
-
         layout.run();
 
 
