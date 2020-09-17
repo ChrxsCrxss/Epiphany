@@ -220,7 +220,8 @@ class Diagram extends Component {
 
 
     /**
-     * Here we define the commands that we pass to the cxtmenu 
+     * Here we define the commands that we pass to the cxtmenu. There is alot of repeated
+     * code here. It would be better to  
      */
     printToConsole = {
         // example command
@@ -294,18 +295,6 @@ class Diagram extends Component {
         enabled: true // whether the command is selectable
 
     }
-
-    /**
- * the default values of each option are outlined below:
- * Three commands for the cirle wheel: 
- * (1) Open in panel ( open panel, display text, other info )
- * (2) Add Supporting Ideas ( create green node )
- * (3) Add Opposing Ideas ( create red node )
- * (4) Piggyback off these Ideas ( create node )
- * (5) Print to console
- */
-
-
 
 
 

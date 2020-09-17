@@ -5,6 +5,7 @@
     height: 400px;
 }
 
-.Button {
+.ButtonPanel {
     padding: 0; 
+    bottom: 0;
 }
