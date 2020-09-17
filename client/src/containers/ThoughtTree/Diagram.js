@@ -170,17 +170,15 @@ class Diagram extends Component {
                 : type === 'oppose' ? 'red'
                     : 'blue';
 
-
-        const newNodeID = `node-${uuidv4()}`;
-
+        const newNodeID = content.id || uuidv4(); 
         this.myCyRef.add({
             group: 'nodes',
             data: {
                 id: newNodeID,
-                label: content.title,
-                type: content.type,
-                title: content.title,
-                content: content.content
+                label: content.title || 'Add label by adding a title',
+                type: content.type ,
+                title: content.title || 'Add title',
+                content: content.content || 'Add content'
             },
         });
 

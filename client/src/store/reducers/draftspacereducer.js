@@ -1,5 +1,5 @@
 import * as actionTypes from "../actions/actions";
-
+import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {
     selectedArgumentType: null,
@@ -35,6 +35,7 @@ const draftSpaceReducer = (state = initialState, action) => {
                     {
                         ...state,
                         thesis: {
+                            id: uuidv4(),
                             type: state.selectedArgumentType,
                             title: state.title,
                             content: state.content
@@ -43,6 +44,7 @@ const draftSpaceReducer = (state = initialState, action) => {
                     : {
                         ...state,
                         [state.selectedArgumentType]: state[state.selectedArgumentType].concat({
+                            id: uuidv4(),
                             type: state.selectedArgumentType,
                             title: state.title,
                             content: state.content
