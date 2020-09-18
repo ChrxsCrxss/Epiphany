@@ -5,7 +5,7 @@ import KeyboardVoiceIcon from '@material-ui/icons/KeyboardVoice';
 import SaveIcon from '@material-ui/icons/Save';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import InsertChartOutlinedRoundedIcon from '@material-ui/icons/InsertChartOutlinedRounded';
-
+import { connect } from "react-redux"; 
 
 /*
 
@@ -16,6 +16,9 @@ import InsertChartOutlinedRoundedIcon from '@material-ui/icons/InsertChartOutlin
 
 const draftDeckControls = (props) => {
 
+    const gotoMindMap = () => {
+        props.history.push('/thoughtTree'); 
+    }
 
     return (
 
@@ -37,11 +40,12 @@ const draftDeckControls = (props) => {
             <Button
                 variant="contained"
                 color="primary"
+                disabled={ props.thesis.title === undefined }
                 size="small"
                 startIcon={<SaveIcon />}
-                onClick={props.saved}
+                onClick={gotoMindMap}
             >
-                Save
+                Goto MindMap 
             </Button>
 
             <Button
@@ -79,11 +83,13 @@ const draftDeckControls = (props) => {
 
 
     )
+}
 
-
-
-
+const mapStateToProps = state => {
+    return {
+        thesis : state.thesis
+    }
 }
 
 
-export default draftDeckControls; 
+export default connect(mapStateToProps)(draftDeckControls); 

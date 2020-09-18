@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";
 import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
 import classes from './Diagram.module.css';
-
+import * as actionTypes from "../../store/actions/actions";
 
 cytoscape.use(cxtmenu);
 
@@ -63,7 +63,7 @@ class Diagram extends Component {
             }
         });
 
-        this.setState({ currentThesisNodeID: this.props.thesis.id }, () => this.loadNodes() ) ;
+        this.setState({ currentThesisNodeID: this.props.thesis.id }, () => this.loadNodes());
 
     }
 
@@ -72,15 +72,31 @@ class Diagram extends Component {
 
         // // Grab qualifying arguments
         for (let i = 0; i < this.props.qual_arguments.length; i++) {
-            this.addNode(this.state.currentThesisNodeID, 'qualify', this.props.qual_arguments[i])
+            this.addNode({
+                creationMethod: 'static',
+                targetEleID: this.state.currentThesisNodeID,
+                edgeType: 'qualify',
+                argumentData: this.props.qual_arguments[i]
+            });
         }
+
         // // Grab pro arguments
         for (let i = 0; i < this.props.pro_arguments.length; i++) {
-            this.addNode(this.state.currentThesisNodeID, 'support', this.props.pro_arguments[i])
+            this.addNode({
+                creationMethod: 'static',
+                targetEleID: this.state.currentThesisNodeID,
+                edgeType: 'support',
+                argumentData: this.props.pro_arguments[i]
+            });
         }
         // Grab con arguments 
         for (let i = 0; i < this.props.con_arguments.length; i++) {
-            this.addNode(this.state.currentThesisNodeID, 'oppose', this.props.con_arguments[i])
+            this.addNode({
+                creationMethod: 'static',
+                targetEleID: this.state.currentThesisNodeID,
+                edgeType: 'oppose',
+                argumentData: this.props.con_arguments[i]
+            });
         }
 
 
@@ -88,14 +104,11 @@ class Diagram extends Component {
         const leaves = this.myCyRef.$('#thesis').leaves();
         console.log(`There are ${leaves.length} open threads remaining`);
 
-        // create new layout
-        let layout = this.myCyRef.$().layout(graphLayoutOptions);
-
-        layout.run();
+        this.runLayout();
     }
 
 
-    
+
     /**
      * 
      * @param {*} id The id associated with the argument node that is being updated
@@ -181,35 +194,71 @@ class Diagram extends Component {
     }
 
     closePanelHandler = () => {
-
         this.setState({ panelContent: null, mapGridSize: 12, showPanel: false });
     }
 
-    // IMPORTANT: to enable in-panel editing, we must also update the store with 
-    // the new argument when we add a new node. 
     /**
      * 
-     * @param {*} targetEleID  The id of the node to be added 
-     * @param {string} type 
-     * @param {object} content 
+     * @param {*} nodeInitInfo
      */
-    addNode = (targetEleID, type, content) => {
+    addNode = (nodeInitInfo) => {
 
-        console.log('in addNode', content);
+        // IMPORTANT: to enable in-panel editing, we must also update the store with 
+        // the new argument when we add a new node. Do this BEFORE adding nodes and edges 
+        // so store is the only truthmaker. The best thing to do might be to acces the store
+        // after pushing the new argument, filtering on ids to get the new argument, and 
+        // using its values to populate the data object of the new node. This way, we can 
+        // immmediately verify that the argument is in the store, and the store remains the 
+        // only truthmaker. Otherwise you risk adding nodes to the graph whose state is not
+        // recorded or managed. Again the problem will be passing id: modify the reducer to 
+        // accept action.id or uuidv4() depending on where the node was created ; save the 
+        // id locally, and filter on it... or just change the dispatch to require an id so 
+        // the component that created the node gets to know what the id is... 
 
-        const edgeColor =
-            type === 'support' ? 'green'
-                : type === 'oppose' ? 'red'
-                    : 'blue';
+        // {
+        //     creationMethod:     
+        //     targetEleID:
+        //      edgeType, 
+        //      argumentData: { 
+        //         id: content.id,
+        //         type: content.type,
+        //         title: content.title
+        //         content: content.content
+        //      }
+        // }
+
+        if (nodeInitInfo.creationMethod === 'dynamic') {
+            alert('updating store'); 
+            this.props.onAddNode(nodeInitInfo.argumentData);
+        }
+
+
+
+
+        console.log('in addNode', nodeInitInfo.argumentData);
+
+        let edgeColor; 
+        switch (nodeInitInfo.edgeType) {
+            case 'support':
+                edgeColor = 'green';
+                break;
+            case 'oppose':
+                edgeColor = 'red';
+                break;
+            case 'qualify': 
+                edgeColor = 'blue'
+            default:
+                edgeColor = 'gray'
+                console.warn('no edge type specified in the nodeInitInfo object: ', nodeInitInfo); 
+                break;
+        }
+
 
         this.myCyRef.add({
             group: 'nodes',
             data: {
-                id: content.id,
-                label: content.title || 'Add label by adding a title',
-                type: content.type,
-                title: content.title || 'Add title',
-                content: content.content || 'Add content'
+                ...nodeInitInfo.argumentData,
+                label : nodeInitInfo.argumentData.title
             },
         });
 
@@ -217,19 +266,18 @@ class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'edges',
-            data: { id: newEdgeID, source: content.id, target: targetEleID },
+            data: { id: newEdgeID, source: nodeInitInfo.argumentData.id, target: nodeInitInfo.targetEleID },
             style: { 'line-color': edgeColor }
         });
 
 
+        this.runLayout()
+    }
 
-
+    runLayout = () => {
         // create new layout
         let layout = this.myCyRef.$().layout(graphLayoutOptions);
         layout.run();
-
-
-
     }
 
     tagThesis = (ele) => {
@@ -283,16 +331,34 @@ class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele.id(), 'support', {
-                label: 'new node',
-                type: 'pro_arguments',
-                title: 'new node title',
-                content: 'new node content'
+            this.addNode({
+                creationMethod: 'dynamic',
+                targetEleID: ele.id(),
+                edgeType: 'support',
+                argumentData: {
+                    id: uuidv4(),
+                    type: 'pro_arguments',
+                    title: 'new node title',
+                    content: 'new node content'
+                }
             });
         },
         enabled: true // whether the command is selectable
     }
 
+
+
+    // {
+    //     creationMethod:     
+    //     targetEleID:
+    //      edgeType, 
+    //      argumentData: { 
+    //         id: content.id,
+    //         type: content.type,
+    //         title: content.title
+    //         content: content.content
+    //      }
+    // }
     AddOpposeNode = {
 
         // example command
@@ -301,11 +367,16 @@ class Diagram extends Component {
         contentStyle: {}, // css key:value pairs to set the command's css in js if you want
         select: (ele) => { // a function to execute when the command is selected
             console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode(ele.id(), 'oppose', {
-                label: 'new node',
-                type: 'con_arguments',
-                title: 'new node title',
-                content: 'new node content'
+            this.addNode({
+                creationMethod: 'dynamic',
+                targetEleID: ele.id(),
+                edgeType: 'oppose',
+                argumentData: {
+                    id: uuidv4(),
+                    type: 'con_arguments',
+                    title: 'new node title',
+                    content: 'new node content'
+                }
             });
         },
         enabled: true // whether the command is selectable
@@ -366,7 +437,7 @@ class Diagram extends Component {
                                 content={this.state.panelContent}
                                 close={this.closePanelHandler}
                                 ele={this.state.currentEleInPanel}
-                                onEditUpdate={this.updateNode }
+                                onEditUpdate={this.updateNode}
                             />
                         </Grid>
                         : null
@@ -376,6 +447,26 @@ class Diagram extends Component {
             </React.Fragment>
         )
     }
+}
+
+
+const mapDispatchToProps = dispatch => {
+    return {
+
+        /**
+         * @param {object} payload The object holding the values
+         * for the argument object. Has the following values: 
+         * { id, type, title, content }
+         */
+        onAddNode: (payload) => dispatch(
+            {
+                type: actionTypes.ADD_ARGUMENT,
+                payload: payload
+            }
+        )
+
+
+    };
 }
 
 const mapStateToProps = state => {
@@ -388,4 +479,4 @@ const mapStateToProps = state => {
 };
 
 
-export default connect(mapStateToProps)(Diagram); 
+export default connect(mapStateToProps, mapDispatchToProps)(Diagram); 

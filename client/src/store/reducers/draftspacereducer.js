@@ -53,25 +53,16 @@ const draftSpaceReducer = (state = initialState, action) => {
 
             break; 
         case actionTypes.ADD_ARGUMENT:
-
             const newState =
                 state.selectedArgumentType === 'thesis' ?
                     {
                         ...state,
-                        thesis: {
-                            id: uuidv4(),
-                            type: state.selectedArgumentType,
-                            title: state.title,
-                            content: state.content
-                        }
+                        thesis: {...action.payload}
                     }
                     : {
                         ...state,
                         [state.selectedArgumentType]: state[state.selectedArgumentType].concat({
-                            id: uuidv4(),
-                            type: state.selectedArgumentType,
-                            title: state.title,
-                            content: state.content
+                            ...action.payload
                         }),
                     };
 

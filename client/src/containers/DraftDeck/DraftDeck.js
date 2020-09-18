@@ -7,6 +7,7 @@ import DraftDeckControls from "./DraftDeckControls/DrafDeckControls";
 import Grid from '@material-ui/core/Grid';
 import RecommendationDeck from "../RecommendationDeck/RecommendationDeck";
 import DashBoard from "../DashBoard/DashBoard";
+import { withRouter } from "react-router-dom";
 
 class DraftDeck extends Component {
 
@@ -87,6 +88,7 @@ class DraftDeck extends Component {
                     submitted={this.toggleRecommendationDeck}
                     showVideo={this.props.showvideomodal}
                     seeData={this.toggleDashBoard}
+                    history={this.props.history}
                 />
 
                 <hr />
@@ -131,4 +133,4 @@ class DraftDeck extends Component {
 }
 
 
-export default DraftDeck; 
+export default withRouter(DraftDeck); 

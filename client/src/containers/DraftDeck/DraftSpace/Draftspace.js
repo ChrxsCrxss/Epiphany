@@ -7,13 +7,19 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { connect } from 'react-redux';
 import Card from '@material-ui/core/Card';
 import * as actionTypes from "../../../store/actions/actions";
+import { v4 as uuidv4 } from 'uuid';
 
 class draftSpace extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
 
-    this.props.onSaveHandler();
+    this.props.onSaveHandler({
+      id : uuidv4(),
+      type : this.props.selectedArgumentType,
+      title : this.props.title,
+      content : this.props.content
+    });
   }
 
 
@@ -26,7 +32,7 @@ class draftSpace extends Component {
         <Select
           labelId="demo-simple-select-placeholder-label-label"
           id="demo-simple-select-placeholder-label"
-          value={this.props.selecedArgumentType}
+          value={this.props.selectedArgumentType}
           onChange={(event) => this.props.onPointTypeChange(event)}
           displayEmpty
 
@@ -38,7 +44,7 @@ class draftSpace extends Component {
           <MenuItem value={'qual_arguments'}>Qualification</MenuItem>
         </Select>
 
-        <h3> Type: {this.props.pt_type} </h3>
+        <h3> Type: {this.props.selectedArgumentType} </h3>
         <button onClick={(event) => this.handleSubmit(event)}> Submit</button>
 
         <Paper elevation={2} className={classes.DraftSpace}>
@@ -118,9 +124,10 @@ const mapDispatchToProps = dispatch => {
       }
     ),
 
-    onSaveHandler: () => dispatch(
+    onSaveHandler: (payload) => dispatch(
       {
-        type: actionTypes.ADD_ARGUMENT,
+        type : actionTypes.ADD_ARGUMENT,
+        payload : {...payload}
       }
     ),
 
@@ -137,7 +144,7 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    pt_type: state.argumentType,
+    selectedArgumentType: state.selectedArgumentType,
     pro_arguments: state.pro_arguments,
     con_arguments: state.con_arguments,
     qual_arguments: state.qual_arguments,

@@ -99,16 +99,7 @@ export default class App extends Component {
             <BrowserRouter>
                 <Layout>
                     <Switch>
-                        <Route path='/' exact render={
-                            () => {
-                                return (
-                                    <DraftDeck
-                                        liftNewNodeContent={this.liftNewNodeContent
-                                        }
-                                    />
-                                )
-                            }
-                        } />
+                        <Route path='/' exact component={DraftDeck}/>
                         <Route path='/login' exact component={SignUp} />
                         <Route path='/test' exact render={() => (<h1>Test Routing Page</h1>)} />
                         <Route path='/about' exact component={AboutBlurb} />
