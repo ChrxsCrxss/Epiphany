@@ -31,9 +31,7 @@ class draftSpace extends Component {
           displayEmpty
 
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
+
           <MenuItem value={'thesis'}>Thesis</MenuItem>
           <MenuItem value={'pro_arguments'}>Argument For Thesis</MenuItem>
           <MenuItem value={'con_arguments'}>Arugment Against Thesis</MenuItem>

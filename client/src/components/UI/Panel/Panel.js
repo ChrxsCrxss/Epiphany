@@ -61,11 +61,11 @@ class Panel extends Component {
                         editMode: true, 
                         cachedArgument: {
                             title: this.props.ele._private.data.title,
-                            content: this.props.ele._private.data.title
+                            content: this.props.ele._private.data.content
                         },
                         updatedArgument: {
                             title: this.props.ele._private.data.title,
-                            content: this.props.ele._private.data.title
+                            content: this.props.ele._private.data.content
                         }
                     }
             )
