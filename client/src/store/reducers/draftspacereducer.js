@@ -5,7 +5,7 @@ const initialState = {
     selectedArgumentType: null,
     title: '',
     content: '',
-    thesis: {},
+    thesis: [], // Not really an array
     pro_arguments: [],
     con_arguments: [],
     qual_arguments: [],
@@ -31,42 +31,52 @@ const draftSpaceReducer = (state = initialState, action) => {
 
         case actionTypes.UPDATE_ARGUMENT:
 
-        console.log(action.updatedArgumentType); 
+            console.log(action.updatedArgumentType);
 
-            return {
-                ...state,
-                [action.updatedArgumentType] : state[action.updatedArgumentType].map(argument => {
+            if (state.selectedArgumentType === 'thesis') {
+                state.thesis.pop();
+            }
 
-                    // If the argument object's id does not match the target id,
-                    // simply return that object unaltered 
-                    if (argument.id !== action.targetArgumentId) {
-                        return
-                    }
+            return (
+                {
+                    ...state,
+                    [action.updatedArgumentType]: state[action.updatedArgumentType].map(argument => {
 
-                    // If the argument object's id does match the target id,
-                    // replace the entire object with the new updatedArgument 
-                    return {
-                        ...action.updatedArgument
-                    }
-                })
-            };
+                        // If the argument object's id does not match the target id,
+                        // simply return that object unaltered 
+                        if (argument.id !== action.targetArgumentId) {
+                            return
+                        }
 
-            break; 
+                        // If the argument object's id does match the target id,
+                        // replace the entire object with the new updatedArgument 
+                        return {
+                            ...action.updatedArgument
+                        }
+                    })
+                }
+
+            )
+            break;
         case actionTypes.ADD_ARGUMENT:
-            const newState =
-                state.selectedArgumentType === 'thesis' ?
-                    {
-                        ...state,
-                        thesis: {...action.payload}
-                    }
-                    : {
-                        ...state,
-                        [state.selectedArgumentType]: state[state.selectedArgumentType].concat({
-                            ...action.payload
-                        }),
-                    };
 
-            return { ...newState, title: '', content: '' };
+            if (state.selectedArgumentType === 'thesis') {
+                state.thesis.pop();
+            }
+
+            return (
+                {
+                    ...state,
+                    [state.selectedArgumentType]: state[state.selectedArgumentType].concat({
+                        ...action.payload
+                    }),
+                    title: '',
+                    content: ''
+                }
+            );
+            break;
+
+        // return { ...newState, title: '', content: '' };
         default:
             console.log('unknown action type');
     }

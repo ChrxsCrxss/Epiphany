@@ -63,15 +63,15 @@ class Diagram extends Component {
         this.myCyRef.add({
             group: 'nodes',
             data: {
-                id: this.props.thesis.id,
-                label: this.props.thesis.title,
-                type: this.props.thesis.type,
-                title: this.props.thesis.title,
-                content: this.props.thesis.content
+                id: this.props.thesis[0].id,
+                label: this.props.thesis[0].title,
+                type: this.props.thesis[0].type,
+                title: this.props.thesis[0].title,
+                content: this.props.thesis[0].content
             }
         });
 
-        this.setState({ currentThesisNodeID: this.props.thesis.id }, () => this.loadNodes());
+        this.setState({ currentThesisNodeID: this.props.thesis[0].id }, () => this.loadNodes());
 
     }
 
@@ -109,8 +109,8 @@ class Diagram extends Component {
 
 
         // TODO: figure out how to get leaves 
-        const leaves = this.myCyRef.$('#thesis').leaves();
-        console.log(`There are ${leaves.length} open threads remaining`);
+        // const leaves = this.myCyRef.$('#thesis').leaves();
+        // console.log(`There are ${leaves.length} open threads remaining`);
 
         this.runLayout();
     }

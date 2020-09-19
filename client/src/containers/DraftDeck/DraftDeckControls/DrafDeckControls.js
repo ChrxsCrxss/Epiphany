@@ -40,7 +40,7 @@ const draftDeckControls = (props) => {
             <Button
                 variant="contained"
                 color="primary"
-                disabled={ props.thesis.title === undefined }
+                disabled={ props.thesis === null }
                 size="small"
                 startIcon={<SaveIcon />}
                 onClick={gotoMindMap}
@@ -87,7 +87,7 @@ const draftDeckControls = (props) => {
 
 const mapStateToProps = state => {
     return {
-        thesis : state.thesis
+        thesis : state.thesis[0] || null
     }
 }
 

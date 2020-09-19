@@ -72,7 +72,7 @@ class draftSpace extends Component {
 
         </Paper>
 
-        { Object.keys(this.props.thesis).length === 0 && this.props.thesis.constructor === Object ?
+        { this.props.thesis === null ?
            <h5 style={{ color: 'red' }}> You don't have a thesis! </h5>
           : <Card>
             <h6>{this.props.thesis.type}</h6>
@@ -148,7 +148,7 @@ const mapStateToProps = state => {
     pro_arguments: state.pro_arguments,
     con_arguments: state.con_arguments,
     qual_arguments: state.qual_arguments,
-    thesis: state.thesis,
+    thesis: state.thesis[0] || null,
     title: state.title,
     content: state.content
   };
