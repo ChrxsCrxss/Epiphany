@@ -35,6 +35,7 @@ const draftSpaceReducer = (state = initialState, action) => {
 
             if (state.selectedArgumentType === 'thesis') {
                 state.thesis.pop();
+                state.push({ id : action.targetArgumentId})
             }
 
             return (
