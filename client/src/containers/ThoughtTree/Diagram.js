@@ -12,15 +12,16 @@ import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";
 import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
 import classes from './Diagram.module.css';
 import * as actionTypes from "../../store/actions/actions";
+import ctxMenuCmdsConfig from "./CytoscapeConfig/ctxMenuCmdsConfig"; 
 
 cytoscape.use(cxtmenu);
 
 
-// Root Thesis
-// Center on Graph
-
-
-
+/**
+ * This component desperately needs to be refactored: 
+ * (1) Move the cytoscapeComponent into its own class component 
+ * (2) Attempt to move the ctxMenuCommands elsewhere and do just-in-time binding or something 
+ */
 
 class Diagram extends Component {
 
@@ -43,8 +44,15 @@ class Diagram extends Component {
 
     componentDidMount() {
 
-        const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
+        // const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
 
+        const commands = ctxMenuCmdsConfig({
+            defendCallback : this.addNode,
+            attackCallback : this.addNode,
+            makeThesisCallback : this.nodeClickedHandler,
+            openInPanelCallback : this.nodeClickedHandler
+        })
+        
         const ctxMenuConfigObjectWithCmds = { ...ctxMenuConfigObject, commands: commands };
 
         this.setState({ ctxMenuConfiguration: ctxMenuConfigObjectWithCmds });
@@ -115,6 +123,8 @@ class Diagram extends Component {
      * @param {string} type The type of argument being updated. Used to traverse the correct array. 
      */
     updateNode = (id, type) => {
+
+        console.log(type); 
 
         for (const argument of this.props[type]) {
             if (id === argument.id) {
@@ -215,23 +225,21 @@ class Diagram extends Component {
         // id locally, and filter on it... or just change the dispatch to require an id so 
         // the component that created the node gets to know what the id is... 
 
-        // {
-        //     creationMethod:     
-        //     targetEleID:
-        //      edgeType, 
-        //      argumentData: { 
-        //         id: content.id,
-        //         type: content.type,
-        //         title: content.title
-        //         content: content.content
-        //      }
-        // }
 
         if (nodeInitInfo.creationMethod === 'dynamic') {
-            alert('updating store'); 
-            this.props.onAddNode(nodeInitInfo.argumentData);
-        }
+            console.log('adding argument to store'); 
+            this.props.onAddNode(nodeInitInfo.argumentData)
 
+            for (let i = 0; i < this.props[nodeInitInfo.argumentData.type].length; ++i) {
+                if (this.props[nodeInitInfo.argumentData.type][i].id === nodeInitInfo.argumentData.id) {
+                    console.log('successfully added argument to store'); 
+                    nodeInitInfo.argumentData = {...this.props[nodeInitInfo.argumentData.type][i].argumentData};
+                    break; 
+                }
+            }
+
+
+        }
 
 
 
@@ -294,110 +302,6 @@ class Diagram extends Component {
         this.myCyRef.$(eleID).css({ backgroundColor: 'red' });
 
     }
-
-
-    /**
-     * Here we define the commands that we pass to the cxtmenu. There is alot of repeated
-     * code here. It would be better to  
-     */
-    printToConsole = {
-        // example command
-        fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
-        content: 'Print to console', // html/text content to be displayed in the menu
-        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-        select: (ele) => { // a function to execute when the command is selected
-            alert('clicked a node:  ' + ele.id()) // `ele` holds the reference to the active element
-        },
-        enabled: true // whether the command is selectable
-    }
-
-    OpenInPanel = {
-        // example command
-        fillColor: 'rgba(100, 100, 100, 0.75)', // optional: custom background color for item
-        content: 'Open in Panel', // html/text content to be displayed in the menu
-        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-        select: (ele) => { // a function to execute when the command is selected
-            console.log('clicked open panel in ctxmenu');
-            this.nodeClickedHandler(ele._private.data.text, ele);
-        },
-        enabled: true // whether the command is selectable
-    }
-
-    AddSupportNode = {
-
-        // example command
-        fillColor: 'rgba(20, 200, 40, 0.75)', // optional: custom background color for item
-        content: 'Defend', // html/text content to be displayed in the menu
-        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-        select: (ele) => { // a function to execute when the command is selected
-            console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode({
-                creationMethod: 'dynamic',
-                targetEleID: ele.id(),
-                edgeType: 'support',
-                argumentData: {
-                    id: uuidv4(),
-                    type: 'pro_arguments',
-                    title: 'new node title',
-                    content: 'new node content'
-                }
-            });
-        },
-        enabled: true // whether the command is selectable
-    }
-
-
-
-    // {
-    //     creationMethod:     
-    //     targetEleID:
-    //      edgeType, 
-    //      argumentData: { 
-    //         id: content.id,
-    //         type: content.type,
-    //         title: content.title
-    //         content: content.content
-    //      }
-    // }
-    AddOpposeNode = {
-
-        // example command
-        fillColor: 'rgba(200, 20, 20, 0.75)', // optional: custom background color for item
-        content: 'Attack', // html/text content to be displayed in the menu
-        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-        select: (ele) => { // a function to execute when the command is selected
-            console.log('clicked add supporting ideas in ctxmenu');
-            this.addNode({
-                creationMethod: 'dynamic',
-                targetEleID: ele.id(),
-                edgeType: 'oppose',
-                argumentData: {
-                    id: uuidv4(),
-                    type: 'con_arguments',
-                    title: 'new node title',
-                    content: 'new node content'
-                }
-            });
-        },
-        enabled: true // whether the command is selectable
-    }
-
-    DesignateAsThesis = {
-
-        // example command
-        fillColor: 'rgba(200, 200, 0, 0.75)', // optional: custom background color for item
-        content: 'Make Thesis', // html/text content to be displayed in the menu
-        contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-        select: (ele) => { // a function to execute when the command is selected
-            console.log('clicked designate as thesis in ctxmenu');
-            this.tagThesis(ele);
-        },
-        enabled: true // whether the command is selectable
-
-    }
-
-
-
 
     render() {
 
