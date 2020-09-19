@@ -211,7 +211,7 @@ class Diagram extends Component {
      * 
      * @param {*} nodeInitInfo
      */
-    addNode = async (nodeInitInfo) => {
+    addNode = (nodeInitInfo) => {
 
         // IMPORTANT: to enable in-panel editing, we must also update the store with 
         // the new argument when we add a new node. Do this BEFORE adding nodes and edges 
@@ -228,16 +228,25 @@ class Diagram extends Component {
 
         if (nodeInitInfo.creationMethod === 'dynamic') {
             console.log('adding argument to store'); 
-            const response = await this.props.onAddNode(nodeInitInfo.argumentData)
+            this.props.onAddNode(nodeInitInfo.argumentData)
 
             console.log(nodeInitInfo.argumentData.type); 
 
-            const targetArray =
-            nodeInitInfo.argumentData.type === 'support' ?
-            this.props.pro_arguments
-            : this.props.con_arguments
+            let targetArray;
+            switch (nodeInitInfo.argumentData.type) {
+                case 'pro_arguments':
+                    targetArray = this.props.pro_arguments;
+                    break;
+                case 'con_arguments':
+                    targetArray = this.props.con_arguments;
+                    break; 
+                case 'qual_arguments' :
+                    targetArray = this.props.qual_arguments;
+                default:
+                    throw Error("no target array found"); 
+                    break;
+            }
 
-            console.log(targetArray); 
 
             for (let i = 0; i < targetArray.length; ++i) {
                 const arg = targetArray[i]; 

@@ -11,18 +11,27 @@ import { v4 as uuidv4 } from 'uuid';
 
 class draftSpace extends Component {
 
+
+
+  state = {
+    selectedArgumentType : 'thesis'
+  }
+
+
   handleSubmit = (event) => {
     event.preventDefault();
 
     this.props.onSaveHandler({
       id : uuidv4(),
-      type : this.props.selectedArgumentType,
+      type : this.state.selectedArgumentType,
       title : this.props.title,
       content : this.props.content
     });
   }
 
-
+  argumentTypeChangeHandler = (event) => {
+    this.setState({ selectedArgumentType : event.target.value })
+  }
 
   render() {
 
@@ -33,7 +42,7 @@ class draftSpace extends Component {
           labelId="demo-simple-select-placeholder-label-label"
           id="demo-simple-select-placeholder-label"
           value={this.props.selectedArgumentType}
-          onChange={(event) => this.props.onPointTypeChange(event)}
+          onChange={(event) => this.argumentTypeChangeHandler(event)}
           displayEmpty
 
         >
@@ -117,13 +126,6 @@ class draftSpace extends Component {
 const mapDispatchToProps = dispatch => {
   return {
 
-    onPointTypeChange: (event) => dispatch(
-      {
-        type: actionTypes.SELECT_TYPE,
-        argumentType: event.target.value
-      }
-    ),
-
     onSaveHandler: (payload) => dispatch(
       {
         type : actionTypes.ADD_ARGUMENT,
@@ -144,7 +146,6 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = state => {
   return {
-    selectedArgumentType: state.selectedArgumentType,
     pro_arguments: state.pro_arguments,
     con_arguments: state.con_arguments,
     qual_arguments: state.qual_arguments,

@@ -16,12 +16,6 @@ const draftSpaceReducer = (state = initialState, action) => {
 
     console.log(action);
     switch (action.type) {
-        case actionTypes.SELECT_TYPE:
-            return {
-                ...state,
-                selectedArgumentType: action.argumentType
-            }
-            break;
         case actionTypes.UPDATE_DRAFT:
             return {
                 ...state,
@@ -61,14 +55,14 @@ const draftSpaceReducer = (state = initialState, action) => {
             break;
         case actionTypes.ADD_ARGUMENT:
 
-            if (state.selectedArgumentType === 'thesis') {
+            if (action.payload.type === 'thesis') {
                 state.thesis.pop();
             }
 
             return (
                 {
                     ...state,
-                    [state.selectedArgumentType]: state[state.selectedArgumentType].concat({
+                    [action.payload.type]: state[action.payload.type].concat({
                         ...action.payload
                     }),
                     title: '',
