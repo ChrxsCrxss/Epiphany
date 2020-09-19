@@ -2,11 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom"; 
 import App from "./components/App"
 
-import { createStore } from "redux"; 
+import { createStore, applyMiddleware, compose } from "redux"; 
 import { Provider } from "react-redux"; 
 import draftSpaceReducer from "./store/reducers/draftspacereducer"; 
 
-const store = createStore( draftSpaceReducer ); 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore( draftSpaceReducer, composeEnhancers(applyMiddleware())); 
 
 
 ReactDOM.render(<Provider store={store}><App/></Provider>, document.getElementById("root"));
