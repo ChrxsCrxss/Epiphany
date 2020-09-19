@@ -49,7 +49,7 @@ class Diagram extends Component {
         const commands = ctxMenuCmdsConfig({
             defendCallback : this.addNode,
             attackCallback : this.addNode,
-            makeThesisCallback : this.nodeClickedHandler,
+            makeThesisCallback : this.tagThesis,
             openInPanelCallback : this.nodeClickedHandler
         })
         
