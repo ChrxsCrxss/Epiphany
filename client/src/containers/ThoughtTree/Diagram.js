@@ -126,13 +126,32 @@ class Diagram extends Component {
 
         console.log(type); 
 
-        for (const argument of this.props[type]) {
-            if (id === argument.id) {
+
+        let targetArray;
+        switch (type) {
+            case 'thesis':
+                targetArray = this.props.thesis;
+                break;
+            case 'pro_arguments':
+                targetArray = this.props.pro_arguments;
+                break;
+            case 'con_arguments':
+                targetArray = this.props.con_arguments;
+                break; 
+            case 'qual_arguments' :
+                targetArray = this.props.qual_arguments;
+            default:
+                throw Error("no target array found"); 
+                break;
+        }
+
+        for (let i = 0; i < targetArray.length; ++i) {
+            if (id === targetArray[i].id) {
                 this.myCyRef.$(`#${id}`).data({
-                    label: argument.title,
-                    type: argument.type,
-                    title: argument.title,
-                    content: argument.content
+                    label: targetArray[i].title,
+                    type: targetArray[i].type,
+                    title: targetArray[i].title,
+                    content: targetArray[i].content
                 });
             }
         }
