@@ -4,9 +4,9 @@ import ErrorModal from "../UI/Modals/ErrorModal/ErrorModal";
 
 /*
 withErrorHandler is a high-order component that binds interceptor
-logic to the axios instance of the lambda component. The main use
-case is to define 'global' error-handling. This component displays
-a modal containing the error message.
+logic to the axios instance of the lambda component (i.e, the WrappedComponent
+parameter). The main use ase is to define 'global' error-handling. This 
+component displays a modal containing the error message.
 
 Its function is similiar to withErrorBoundary, except withErrorBoundary
 is a general error handling component that bounds the upward propogation

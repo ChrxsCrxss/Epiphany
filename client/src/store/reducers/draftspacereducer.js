@@ -5,7 +5,15 @@ const initialState = {
     selectedArgumentType: null,
     title: '',
     content: '',
-    thesis: [], // Not really an array
+    /**
+     * The thesis is not *really* an array: it can only hold one 
+     * thesis object. This is enforced in the reducer by always checking
+     * if the argument type is 'thesis' and then popping the array. 
+     * 
+     * We use a thesis to simplify state management and to provide 
+     * extensibility
+     */
+    thesis: [],
     pro_arguments: [],
     con_arguments: [],
     qual_arguments: [],
@@ -27,6 +35,9 @@ const draftSpaceReducer = (state = initialState, action) => {
 
             console.log(action.updatedArgumentType);
 
+            // To update the thesis while allowing only one thesis, we pop
+            // the old thesis, then add an object with the id passed in 
+            // the action, so the map function will contain the target id
             if (state.selectedArgumentType === 'thesis') {
                 state.thesis.pop();
                 state.push({ id : action.targetArgumentId})

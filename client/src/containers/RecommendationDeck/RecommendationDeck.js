@@ -6,6 +6,7 @@ import RecommendationModal from "../../components/UI/Modals/RecommendationModal/
 import Spinner from "../../components/UI/Spinner/Spinner";
 import axios from "axios"; 
 import withErrorHandler from "../../components/hoc/withErrorHandler"; 
+import { connect } from 'react-redux'; 
 
 const instance = axios.create(); 
 
@@ -39,19 +40,33 @@ class RecommendationDeck extends Component {
                 cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
                 sunt in culpa qui officia deserunt mollit anim id est laborum.`,
             link: "https://google.com"
-        }
+        }, 
+        mockData : `What is time, what is space? Are time and space infinite? Are time and space
+                    a construction of the human mind?`
 
     }
 
     // We will make asynchronous requests from here. Right how, we
     // mock a three-second delay to verify that the spinner is working 
     async componentDidMount() {
-
-        setTimeout(() => this.setState({ loadingRecommendations : false }),3000);
-
-        const response = await instance.get(`https://this-wont-work/#nice-try`); 
-        
+        this.fetchRecommendations(); 
     }
+
+    fetchRecommendations = async () => {
+
+        // Make an async request to the backend using this method 
+        const response = await instance.post(`http://localhost:4000/recommendations`, {
+            textInput: this.state.mockData
+        });
+
+        
+        // This will, at the very least, turn of the spinner
+        this.setState({ loadingRecommendations : false });
+        
+
+        console.log(response); 
+
+    };
 
 
 

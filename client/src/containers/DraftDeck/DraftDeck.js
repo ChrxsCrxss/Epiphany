@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import RecommendationDeck from "../RecommendationDeck/RecommendationDeck";
 import DashBoard from "../DashBoard/DashBoard";
 import { withRouter } from "react-router-dom";
+import axios from 'axios'
 
 class DraftDeck extends Component {
 
@@ -55,19 +56,6 @@ class DraftDeck extends Component {
 
         console.log("showing recommendations !");
     }
-
-    userSubmittedHandler = () => {
-
-        // Eventually, we will make an async request to the backend using this method 
-        // const res = await axios.post(`http://localhost:4000/recommendations`, {
-        //     textInput: this.state.draftSpaceContent
-        // });
-
-        console.log(this.state.draftSpaceContent);
-
-        alert("Getting recommendations!");
-
-    };
 
 
     render() {
