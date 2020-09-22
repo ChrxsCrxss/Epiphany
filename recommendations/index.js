@@ -86,18 +86,29 @@ app.post('/recommendations', async (req, res) => {
         SEP_QUERY_ARRAY.push(`${SEP_SEARCH_ENDPOINT}${word}`)
     }
 
-    // You can also pass an array
+    const passed_res = res; 
+    /**
+     * The callback function emmited when the crawler queue is empty. 
+     * Return the top matches to the client using the res object
+     * @param {*} res The http response object 
+     */
+    const onCrawlEnd = (res = passed_res) => {
+        redis_client.zrevrange('url_sset', 0, -1, (err, redis_res) => {
+            console.log(redis_res);
+    
+            res.json({
+                results : redis_res.slice(0,100),
+            })
+        });
+    }
+    
+
     crawler.queue(SEP_QUERY_ARRAY);
 
+    // Emitted when queue is empty, i.e. when all requests are processed
+    crawler.on('drain', () => onCrawlEnd());
 
-    redis_client.zrevrange('url_sset', 0, -1, (err, redis_res) => {
-        console.log(redis_res);
 
-        res.json({
-            timestamp : new Date().toTimeString,
-            results : redis_res.slice(0,100)
-        })
-    }); 
 
 
 });
