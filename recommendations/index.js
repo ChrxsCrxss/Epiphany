@@ -1,22 +1,27 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const redis = require('redis');
 const axios = require("axios");
 const cors = require('cors');
 const KeyWordExtractor = require('./src/keywordExtractor');
 
+/**
+ * In order to use async/wait syntax, we promisify
+ * asynchronous redis operations using bluebird 
+ */
+const bluebird = require('bluebird'); 
+const redis = require('redis');
+
+bluebird.promisifyAll(redis.RedisClient.prototype);
+bluebird.promisifyAll(redis.Multi.prototype);
+
+//configure redis client on port 6379
+const port_redis = process.env.PORT || 6379;
+const redis_client = redis.createClient(port_redis);
 
 // configure express instance
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
-
-
-//setup port constants
-const port_redis = process.env.PORT || 6379;
-
-//configure redis client on port 6379
-const redis_client = redis.createClient(port_redis);
 
 
 // @ts-ignore
@@ -92,15 +97,26 @@ app.post('/recommendations', async (req, res) => {
      * Return the top matches to the client using the res object
      * @param {*} res The http response object 
      */
-    const onCrawlEnd = (res = passed_res) => {
-        redis_client.zrevrange('url_sset', 0, -1, (err, redis_res) => {
-            console.log(redis_res);
-    
-            res.json({
-                results : redis_res.slice(0,100),
-            })
-        });
+    const onCrawlEnd = async (res = passed_res) => {
+        
+        const response = await redis_client.zrevrangeAsync('url_sset', 0, -1);
+
+        console.log(response);
+
+        res.send(response); 
     }
+
+    // , (err, redis_res) => {
+    //     console.log(redis_res);
+        
+
+    //     crawler.queue( redis_res.slice(0,10), () => ); 
+
+    // }
+
+    // res.json({
+    //     results : redis_res.slice(0,10),
+    // }); 
     
 
     crawler.queue(SEP_QUERY_ARRAY);
