@@ -3,12 +3,15 @@ const bodyParser = require('body-parser');
 const axios = require("axios");
 const cors = require('cors');
 const KeyWordExtractor = require('./src/keywordExtractor');
+const fetch = require('node-fetch');
+const cheerio = require('cheerio');
+
 
 /**
  * In order to use async/wait syntax, we promisify
  * asynchronous redis operations using bluebird 
  */
-const bluebird = require('bluebird'); 
+const bluebird = require('bluebird');
 const redis = require('redis');
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
@@ -23,55 +26,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-
-// @ts-ignore
-const Crawler = require("crawler");
-let crawler = new Crawler({
-    maxConnections: 10,
-    // This will be called for each crawled page
-    callback: (error, res, done) => {
-
-        if (error) {
-            console.log(error);
-        } else {
-
-            var $ = res.$;
-            // $ is Cheerio by default
-            //a lean implementation of core jQuery designed specifically for the server
-            const title = $("title").text();
-
-            // Each article url is listed as a result_url object 
-            const SEP_ARTICLE_URL_ENDPT = `https://plato.stanford.edu/entries/`;
-            const SEP_URLS = $('.result_url')
-
-                // First get the text. This returns a string, with each
-                // url seperated by a newline character 
-                .text()
-
-                // Next, split on the newline character to produce an 
-                // array of urls
-                .split('\n')
-
-                // Finally, filter our extraneous elements 
-                .filter(url => url.includes(SEP_ARTICLE_URL_ENDPT)); ;
-
-
-
-            for (url of SEP_URLS) {
-                redis_client.zadd('url_sset', 'INCR', '1', `${url}`), (err, res) => {
-                    redis_client.zrank('url_sset', url, (err, res) => {
-                        console.log(res)
-                    });
-                }
-
-            }
-
-        }
-        done();
-    }
-});
-
-
+let responseIsEmpty = (res) => !res || res.length === 0;
 
 app.post('/recommendations', async (req, res) => {
 
@@ -83,52 +38,86 @@ app.post('/recommendations', async (req, res) => {
     const keywords = KeyWordExtractor.getKeywords(TextInput);
     console.log(`keywords:\n${[...keywords]}`);
 
-    const SEP_SEARCH_ENDPOINT = `https://plato.stanford.edu/search/search?query=`;
 
-    const SEP_QUERY_ARRAY = [];
-
-    for (let word of keywords) {
-        SEP_QUERY_ARRAY.push(`${SEP_SEARCH_ENDPOINT}${word}`)
-    }
-
-    const passed_res = res; 
     /**
-     * The callback function emmited when the crawler queue is empty. 
-     * Return the top matches to the client using the res object
-     * @param {*} res The http response object 
-     */
-    const onCrawlEnd = async (res = passed_res) => {
-        
-        const response = await redis_client.zrevrangeAsync('url_sset', 0, -1);
+     * The strategy for crawling the Stanford Encyclopedia of Philosophy (SEP) has
+    * two phases:
+    * 
+    * PHASE 1: 
+    * Send a request to the SEP search endpoint for each unique keyword. Each request
+    * will return the top ten suggested articles for that keyword. Those ten suggestions
+    * are then cached in a sorted set in Redis. 
+    * 
+    * PHASE 2: 
+    * After all the keywords have been queried against the SEP search endpoint, the top
+    * urls need to be scraped to gather content for recommendation cards.
+    * 
+    * The current implementatino is not performant, as each request must wait for the one
+    * before it to complete. 
+    */
 
-        console.log(response);
 
-        res.send(response); 
+                                /* PHASE ONE */
+
+    const SEP_SEARCH_ENDPOINT = `https://plato.stanford.edu/search/search?query=`;
+    for (let keyword of keywords) {
+
+        const response = await fetch(`${SEP_SEARCH_ENDPOINT}${keyword}`);
+
+        const body = await response.text();
+
+        let $ = cheerio.load(body);
+
+        const SEP_ARTICLE_URL_ENDPT = `https://plato.stanford.edu/entries/`;
+        const SEP_URLS = $('.result_url')
+
+            // First get the text. This returns a string, with each
+            // url seperated by a newline character 
+            .text()
+
+            // Next, split on the newline character to produce an 
+            // array of urls
+            .split('\n')
+
+            // Finally, filter out extraneous elements 
+            .filter(url => url.includes(SEP_ARTICLE_URL_ENDPT));
+
+
+        console.log(SEP_URLS);
+
+        for (url of SEP_URLS) {
+            const response = await redis_client.zaddAsync('url_sset', 'INCR', '1', url);
+        }
+
     }
 
-    // , (err, redis_res) => {
-    //     console.log(redis_res);
-        
+                                /* PHASE TWO */
 
-    //     crawler.queue( redis_res.slice(0,10), () => ); 
+    const response = await redis_client.zrevrangeAsync('url_sset', 0, -1);
 
-    // }
+    const topUrls = response.slice(0, 10);
 
-    // res.json({
-    //     results : redis_res.slice(0,10),
-    // }); 
-    
+    const recommendationCardContents = []
 
-    crawler.queue(SEP_QUERY_ARRAY);
+    for (topUrl of topUrls) {
 
-    // Emitted when queue is empty, i.e. when all requests are processed
-    crawler.on('drain', () => onCrawlEnd());
+        const response = await fetch(topUrl);
 
+        const body = await response.text();
 
+        let $ = cheerio.load(body);
 
+        recommendationCardContents.push({
+            title: $("title").text(),
+            intro: $('#preamble p').text(),
+            url: topUrl
+        });
+
+    }
+
+    res.send(recommendationCardContents);
 
 });
-
 
 
 app.listen(4000, () => {
