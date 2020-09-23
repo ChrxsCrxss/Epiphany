@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const axios = require("axios");
 const cors = require('cors');
 const KeyWordExtractor = require('./src/keywordExtractor');
 const fetch = require('node-fetch');
@@ -97,7 +96,7 @@ app.post('/recommendations', async (req, res) => {
 
     const topUrls = response.slice(0, 10);
 
-    const recommendationCardContents = []
+    const recommendationCardContents = []; 
 
     for (topUrl of topUrls) {
 
@@ -108,8 +107,8 @@ app.post('/recommendations', async (req, res) => {
         let $ = cheerio.load(body);
 
         recommendationCardContents.push({
-            title: $("title").text(),
-            intro: $('#preamble p').text(),
+            title: $("title").text().replace('\n', ''),
+            intro: $('#preamble p').text().replace('\n', ''),
             url: topUrl
         });
 
