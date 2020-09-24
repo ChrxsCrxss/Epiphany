@@ -6,7 +6,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { connect } from 'react-redux';
 import Card from '@material-ui/core/Card';
-import * as actionTypes from "../../../store/actions/actionsTypes";
+import * as actionTypes from "../../../store/actions/actionTypes";
+import * as actions from "../../../store/actions/index"; 
 import { v4 as uuidv4 } from 'uuid';
 
 class draftSpace extends Component {
@@ -126,13 +127,7 @@ class draftSpace extends Component {
 const mapDispatchToProps = dispatch => {
   return {
 
-    onSaveHandler: (payload) => dispatch(
-      {
-        type : actionTypes.ADD_ARGUMENT,
-        payload : {...payload}
-      }
-    ),
-
+    onSaveHandler: (payload) => dispatch(actions.addArgument( payload )),
     onDraftChange: (event) => dispatch(
       {
         type: actionTypes.UPDATE_DRAFT,

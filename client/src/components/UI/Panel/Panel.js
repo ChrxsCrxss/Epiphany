@@ -7,8 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../store/actions/actionsTypes'
-
+import * as actions from "../../../store/actions/index"; 
 
 class Panel extends Component {
 
@@ -159,21 +158,7 @@ const matchDispatchToProps = dispatch => {
 
     return {
 
-        /**
-         * @param {object} updatedArgument The object holding updated values
-         */
-        onSaveHandler: (ele, updatedArgument) => dispatch(
-            {
-                type: actionTypes.UPDATE_ARGUMENT,
-                targetArgumentId: ele.id,
-                updatedArgumentType: ele.type,
-                updatedArgument: {
-                    id: ele.id,
-                    type: ele.type,
-                    ...updatedArgument
-                }
-            }
-        )
+        onSaveHandler: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument))
 
     }
 

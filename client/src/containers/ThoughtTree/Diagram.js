@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";
 import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
 import classes from './Diagram.module.css';
-import * as actionTypes from "../../store/actions/actionsTypes";
+import * as actions from '../../store/actions/index';
 import ctxMenuCmdsConfig from "./CytoscapeConfig/ctxMenuCmdsConfig"; 
 
 cytoscape.use(cxtmenu);
@@ -395,20 +395,7 @@ class Diagram extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-
-        /**
-         * @param {object} payload The object holding the values
-         * for the argument object. Has the following values: 
-         * { id, type, title, content }
-         */
-        onAddNode: (payload) => dispatch(
-            {
-                type: actionTypes.ADD_ARGUMENT,
-                payload: payload
-            }
-        )
-
-
+        onSaveHandler: (payload) => dispatch(actions.addArgument( payload )),
     };
 }
 
