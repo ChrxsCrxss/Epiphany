@@ -51,7 +51,7 @@ const draftSpaceReducer = (state = initialState, action) => {
                         // If the argument object's id does not match the target id,
                         // simply return that object unaltered 
                         if (argument.id !== action.targetArgumentId) {
-                            return
+                            return argument;
                         }
 
                         // If the argument object's id does match the target id,
