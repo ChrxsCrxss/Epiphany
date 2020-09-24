@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import DraftDeck from "./containers/DraftDeck/DraftDeck";
-import AboutBlurb from "../component/AboutBlurb/AboutBlurb";
-import Layout from "./containers/Layout/Layout";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router-dom";
+
+import DraftDeck from "./containers/DraftDeck/DraftDeck";
+import AboutBlurb from "./components/AboutBlurb/AboutBlurb";
+import Layout from "./containers/Layout/Layout";
 import Diagram from "./containers/ThoughtTree/Diagram.js";
 import SignUp from "./containers/Authentication/SignUp/SignUp"; 
 
@@ -12,18 +13,7 @@ import SignUp from "./containers/Authentication/SignUp/SignUp";
 
 export default class App extends Component {
 
-    componentDidUpdate() {
-
-        console.log('[Diagram.js]: componentDidUpdate');
-
-    }
-
-
-
-
     render() {
-
-
         return (
             <BrowserRouter>
                 <Layout>

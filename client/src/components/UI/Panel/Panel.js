@@ -7,7 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../store/actions/actions'
+import * as actionTypes from '../../../store/actions/actionsTypes'
 
 
 class Panel extends Component {

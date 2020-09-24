@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { connect } from 'react-redux';
 import Card from '@material-ui/core/Card';
-import * as actionTypes from "../../../store/actions/actions";
+import * as actionTypes from "../../../store/actions/actionsTypes";
 import { v4 as uuidv4 } from 'uuid';
 
 class draftSpace extends Component {

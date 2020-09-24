@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";
 import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
 import classes from './Diagram.module.css';
-import * as actionTypes from "../../store/actions/actions";
+import * as actionTypes from "../../store/actions/actionsTypes";
 import ctxMenuCmdsConfig from "./CytoscapeConfig/ctxMenuCmdsConfig"; 
 
 cytoscape.use(cxtmenu);
