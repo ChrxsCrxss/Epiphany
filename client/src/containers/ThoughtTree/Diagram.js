@@ -12,7 +12,8 @@ import ctxMenuConfigObject from "./CytoscapeConfig/ctxMenuConfiguration";
 import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
 import classes from './Diagram.module.css';
 import * as actions from '../../store/actions/index';
-import ctxMenuCmdsConfig from "./CytoscapeConfig/ctxMenuCmdsConfig"; 
+import ctxMenuCmdsConfig from "./CytoscapeConfig/ctxMenuCmdsConfig";
+import assert from 'assert'; 
 
 cytoscape.use(cxtmenu);
 
@@ -47,36 +48,50 @@ class Diagram extends Component {
         // const commands = [this.DesignateAsThesis, this.printToConsole, this.OpenInPanel, this.AddSupportNode, this.AddOpposeNode];
 
         const commands = ctxMenuCmdsConfig({
-            defendCallback : this.addNode,
-            attackCallback : this.addNode,
-            makeThesisCallback : this.tagThesis,
-            openInPanelCallback : this.nodeClickedHandler
+            defendCallback: this.addNode,
+            attackCallback: this.addNode,
+            makeThesisCallback: this.tagThesis,
+            openInPanelCallback: this.nodeClickedHandler
         })
-        
+
         const ctxMenuConfigObjectWithCmds = { ...ctxMenuConfigObject, commands: commands };
 
         this.setState({ ctxMenuConfiguration: ctxMenuConfigObjectWithCmds });
 
         this.setState({ cyCoreListeners: this.myCyRef._private.emitter.listeners });
 
-        // Grab thesis
-        this.myCyRef.add({
-            group: 'nodes',
-            data: {
-                id: this.props.thesis[0].id,
-                label: this.props.thesis[0].title,
-                type: this.props.thesis[0].type,
-                title: this.props.thesis[0].title,
-                content: this.props.thesis[0].content
-            }
-        });
 
-        this.setState({ currentThesisNodeID: this.props.thesis[0].id }, () => this.loadNodes());
+        /**
+         * Add a check to see if there is a thesis. Useful for development: allows access
+         * of the page without adding a thesis 
+         */
+        let initThesisID = 'null thesis id value';
+        if (this.props.thesis[0]) {
+            initThesisID = this.props.thesis[0].id;
+        }
+
+        /**
+         * We load the nodes in the callback because all original arguments either
+         * support, oppose, or qualify the thesis. Since the id of the thesis is used
+         * as the id of the target node, currentThesisNodeID must be set before the 
+         * nodes can be loaded.
+         */
+        this.setState({ currentThesisNodeID: initThesisID }, () => this.loadNodes());
 
     }
 
     // refactor method to reduce repetition and remove two other functions 
     loadNodes = () => {
+
+        // // Grab theses (currently at most one)
+        for (let i = 0; i < this.props.thesis.length; i++) {
+            this.addNode({
+                creationMethod: 'static',
+                targetEleID: this.state.currentThesisNodeID,
+                edgeType: 'qualify',
+                argumentData: this.props.thesis[i]
+            });
+        }
 
         // // Grab qualifying arguments
         for (let i = 0; i < this.props.qual_arguments.length; i++) {
@@ -124,7 +139,7 @@ class Diagram extends Component {
      */
     updateNode = (id, type) => {
 
-        console.log(type); 
+        console.log(type);
 
 
         let targetArray;
@@ -137,15 +152,17 @@ class Diagram extends Component {
                 break;
             case 'con_arguments':
                 targetArray = this.props.con_arguments;
-                break; 
-            case 'qual_arguments' :
+                break;
+            case 'qual_arguments':
                 targetArray = this.props.qual_arguments;
             default:
-                throw Error("no target array found"); 
+                throw Error("no target array found");
                 break;
         }
+        
 
         for (let i = 0; i < targetArray.length; ++i) {
+            assert( targetArray[i] !== undefined ); 
             if (id === targetArray[i].id) {
                 this.myCyRef.$(`#${id}`).data({
                     label: targetArray[i].title,
@@ -226,6 +243,54 @@ class Diagram extends Component {
         this.setState({ panelContent: null, mapGridSize: 12, showPanel: false });
     }
 
+
+    updateStoreAndGetData = (nodeInitInfo) => {
+
+        console.log('adding argument to store');
+        this.props.onDynamicAddNode(nodeInitInfo.argumentData)
+
+        console.log(nodeInitInfo.argumentData.type);
+
+        let targetArray;
+        switch (nodeInitInfo.argumentData.type) {
+            case 'pro_arguments':
+                targetArray = this.props.pro_arguments;
+                break;
+            case 'con_arguments':
+                targetArray = this.props.con_arguments;
+                break;
+            case 'qual_arguments':
+                targetArray = this.props.qual_arguments;
+            default:
+                throw Error("no target array found");
+        }
+
+
+        for (let i = 0; i < targetArray.length; ++i) {
+            const arg = targetArray[i];
+            console.log("checking that store was updated: ", arg);
+            if (arg.id === nodeInitInfo.argumentData.id) {
+                console.log('successfully added argument to store');
+
+                return { ...nodeInitInfo, argumentData: { ...arg } }
+            }
+        }
+
+        console.alert('Could not successfully get data from store');
+        return nodeInitInfo;
+    }
+
+    getEdgeColorFromEdgeType = (edgeType) => {
+
+        switch (edgeType) {
+            case 'support': return 'green';
+            case 'oppose': return 'red';
+            case 'qualify': return 'blue';
+            default: return 'gray';
+        }
+
+    }
+
     /**
      * 
      * @param {*} nodeInitInfo
@@ -246,68 +311,24 @@ class Diagram extends Component {
 
 
         if (nodeInitInfo.creationMethod === 'dynamic') {
-            console.log('adding argument to store'); 
-            this.props.onAddNode(nodeInitInfo.argumentData)
-
-            console.log(nodeInitInfo.argumentData.type); 
-
-            let targetArray;
-            switch (nodeInitInfo.argumentData.type) {
-                case 'pro_arguments':
-                    targetArray = this.props.pro_arguments;
-                    break;
-                case 'con_arguments':
-                    targetArray = this.props.con_arguments;
-                    break; 
-                case 'qual_arguments' :
-                    targetArray = this.props.qual_arguments;
-                default:
-                    throw Error("no target array found"); 
-                    break;
-            }
-
-
-            for (let i = 0; i < targetArray.length; ++i) {
-                const arg = targetArray[i]; 
-                console.log("checking that store was updated: ", arg); 
-                if (arg.id === nodeInitInfo.argumentData.id) {
-                    console.log('successfully added argument to store'); 
-                    nodeInitInfo.argumentData = {...arg};
-                    break; 
-                }
-            }
-
-
+            console.log('adding argument to store');
+            // this.props.onDynamicAddNode(nodeInitInfo.argumentData)
+            nodeInitInfo = this.updateStoreAndGetData(nodeInitInfo);
         }
-
-
-
-        console.log('in addNode', nodeInitInfo.argumentData);
-
-        let edgeColor; 
-        switch (nodeInitInfo.edgeType) {
-            case 'support':
-                edgeColor = 'green';
-                break;
-            case 'oppose':
-                edgeColor = 'red';
-                break;
-            case 'qualify': 
-                edgeColor = 'blue'
-            default:
-                edgeColor = 'gray'
-                console.warn('no edge type specified in the nodeInitInfo object: ', nodeInitInfo); 
-                break;
-        }
-
 
         this.myCyRef.add({
             group: 'nodes',
             data: {
                 ...nodeInitInfo.argumentData,
-                label : nodeInitInfo.argumentData.title
+                label: nodeInitInfo.argumentData.title
             },
         });
+
+
+
+
+
+        let edgeColor = this.getEdgeColorFromEdgeType(nodeInitInfo.edgeType)
 
         const newEdgeID = `edge-${uuidv4()}`;
 
@@ -395,7 +416,7 @@ class Diagram extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSaveHandler: (payload) => dispatch(actions.addArgument( payload )),
+        onDynamicAddNode: (payload) => dispatch(actions.addArgument(payload)),
     };
 }
 
