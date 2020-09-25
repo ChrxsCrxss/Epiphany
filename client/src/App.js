@@ -2,14 +2,21 @@ import React, { Component } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Route, Switch } from "react-router-dom";
 
-import DraftDeck from "./containers/DraftDeck/DraftDeck";
 import AboutBlurb from "./components/AboutBlurb/AboutBlurb";
 import Layout from "./containers/Layout/Layout";
-import Diagram from "./containers/ThoughtTree/Diagram.js";
-import SignUp from "./containers/Authentication/SignUp/SignUp"; 
+import asyncComponent from "./components/hoc/AsyncComponent/AsyncComponent"; 
 
-// The app container returns the draft-space (user input area),
-// wrapped in the high-order Layout Component. 
+const asyncDraftDeck = asyncComponent(() => {
+    return import("./containers/DraftDeck/DraftDeck");
+});
+
+const asyncSignUp = asyncComponent(() => {
+    return import("./containers/Authentication/SignUp/SignUp");
+});
+
+const asyncDiagram = asyncComponent(() => {
+    return import("./containers/ThoughtTree/Diagram.js");
+});
 
 export default class App extends Component {
 
@@ -18,11 +25,11 @@ export default class App extends Component {
             <BrowserRouter>
                 <Layout>
                     <Switch>
-                        <Route path='/' exact component={DraftDeck}/>
-                        <Route path='/login' exact component={SignUp} />
+                        <Route path='/' exact component={asyncDraftDeck}/>
+                        <Route path='/login' exact component={asyncSignUp} />
                         <Route path='/test' exact render={() => (<h1>Test Routing Page</h1>)} />
                         <Route path='/about' exact component={AboutBlurb} />
-                        <Route path='/thoughtTree' exact component={Diagram} />
+                        <Route path='/thoughtTree' exact component={asyncDiagram} />
                     </Switch>
                 </Layout>
             </BrowserRouter>
