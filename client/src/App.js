@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { BrowserRouter } from "react-router-dom";
-import { Route, Switch } from "react-router-dom";
+
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AboutBlurb from "./components/AboutBlurb/AboutBlurb";
 import Layout from "./containers/Layout/Layout";

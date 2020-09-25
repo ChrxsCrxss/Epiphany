@@ -7,7 +7,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
 import { connect } from 'react-redux';
-import * as actions from "../../../store/actions/index"; 
+import * as actions from "../../../store/actions/index";
 
 class Panel extends Component {
 
@@ -57,7 +57,7 @@ class Panel extends Component {
                 prevState.editMode ?
                     { editMode: false }
                     : {
-                        editMode: true, 
+                        editMode: true,
                         cachedArgument: {
                             title: this.props.ele._private.data.title,
                             content: this.props.ele._private.data.content
@@ -79,10 +79,23 @@ class Panel extends Component {
             title: this.state.updatedArgument.title
         }
 
-        console.log('onSaveHandlerWrapper: ', ele); 
-        const response = await this.props.onSaveHandler({...ele}, {...this.state.updatedArgument}); 
+        console.log('onSaveHandlerWrapper: ', ele);
+        const response = await this.props.onSaveHandler({ ...ele }, { ...this.state.updatedArgument });
 
-        this.props.onEditUpdate(ele.id, ele.type); 
+        this.props.onEditUpdate(ele.id, ele.type);
+    }
+
+    onDeleteHanderWrapper = async () => {
+
+        const payload = {
+            targetId: this.props.ele._private.data.id,
+            argumentType : this.props.ele._private.data.type
+        }
+
+        const response = await this.props.onDeleteHandler(payload);
+
+        this.props.onDelete( this.props.ele._private.data.id )
+
     }
 
 
@@ -123,12 +136,15 @@ class Panel extends Component {
                     onClick={this.toggleEditMode}>
                     <EditIcon />
                 </IconButton>
-                <IconButton 
-                aria-label="delete"
-                onClick={this.onSaveHandlerWrapper}>
+                <IconButton
+                    aria-label="delete"
+                    onClick={this.onSaveHandlerWrapper}>
                     <ReplayIcon />
                 </IconButton>
-                <IconButton aria-label="delete">
+                <IconButton
+                    aria-label="delete"
+                    disabled={ this.props.ele._private.data.type === 'thesis'}
+                    onClick={this.onDeleteHanderWrapper}>
                     <DeleteIcon />
                 </IconButton>
 
@@ -158,7 +174,8 @@ const matchDispatchToProps = dispatch => {
 
     return {
 
-        onSaveHandler: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument))
+        onSaveHandler: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument)),
+        onDeleteHandler: (payload) => dispatch(actions.deleteArgument(payload))
 
     }
 

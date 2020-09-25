@@ -85,8 +85,8 @@ const draftSpaceReducer = (state = initialState, action) => {
             return (
                 {
                     ...state,
-                    [action.argumentType]: state[action.argumentType].filter(argument => {
-                        argument.id != action.targetId
+                    [action.payload.argumentType]: state[action.payload.argumentType].filter(argument => {
+                        return argument.id != action.payload.targetId
                     })
                 }
             );

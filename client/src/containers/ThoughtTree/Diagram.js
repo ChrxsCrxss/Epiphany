@@ -13,7 +13,7 @@ import graphLayoutOptions from "./CytoscapeConfig/graphLayoutOptions";
 import classes from './Diagram.module.css';
 import * as actions from '../../store/actions/index';
 import ctxMenuCmdsConfig from "./CytoscapeConfig/ctxMenuCmdsConfig";
-import assert from 'assert'; 
+import assert from 'assert';
 
 cytoscape.use(cxtmenu);
 
@@ -159,10 +159,10 @@ class Diagram extends Component {
                 throw Error("no target array found");
                 break;
         }
-        
+
 
         for (let i = 0; i < targetArray.length; ++i) {
-            assert( targetArray[i] !== undefined ); 
+            assert(targetArray[i] !== undefined);
             if (id === targetArray[i].id) {
                 this.myCyRef.$(`#${id}`).data({
                     label: targetArray[i].title,
@@ -291,6 +291,28 @@ class Diagram extends Component {
 
     }
 
+    deleteNode = (id) => {
+
+        /**
+ * We want to prevent parititions, so we need to get all neighbors
+ * the edge type.
+ * 
+ * Cases: 
+ * A) elementToBeRemoved => parent( elementToBeRemoved ) is of same type
+ *    as neighbor(elementToBeRemoved) => elementToBeRemoved
+ */
+
+        // Get edges (and their sources) coming into the nodes in the collection.
+        console.log(this.myCyRef.$(`#${id}`).incomers());
+
+
+        const elementToBeRemoved = this.myCyRef.$(`#${id}`);
+        this.myCyRef.remove(elementToBeRemoved);
+
+
+
+    }
+
     /**
      * 
      * @param {*} nodeInitInfo
@@ -334,7 +356,10 @@ class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'edges',
-            data: { id: newEdgeID, source: nodeInitInfo.argumentData.id, target: nodeInitInfo.targetEleID },
+            data: { 
+                id: newEdgeID, 
+                source: nodeInitInfo.argumentData.id, 
+                target: nodeInitInfo.targetEleID },
             style: { 'line-color': edgeColor }
         });
 
@@ -402,6 +427,7 @@ class Diagram extends Component {
                                 close={this.closePanelHandler}
                                 ele={this.state.currentEleInPanel}
                                 onEditUpdate={this.updateNode}
+                                onDelete={this.deleteNode}
                             />
                         </Grid>
                         : null
