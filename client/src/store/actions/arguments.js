@@ -9,6 +9,13 @@ export const addArgument = ( payload ) => {
     }; 
 };
 
+export const deleteArgument = ( payload ) => {
+    return {
+        type : actionTypes.DELETE_ARGUMENT,
+        payload : {...payload}
+    }; 
+};
+
 
 export const updateArgument = ( ele, updatedArgument ) => {
     return     {

@@ -81,6 +81,16 @@ const draftSpaceReducer = (state = initialState, action) => {
                 }
             );
             break;
+        case actionTypes.DELETE_ARGUMENT: {
+            return (
+                {
+                    ...state,
+                    [action.argumentType]: state[action.argumentType].filter(argument => {
+                        argument.id != action.targetId
+                    })
+                }
+            );
+        }
 
         // return { ...newState, title: '', content: '' };
         default:
