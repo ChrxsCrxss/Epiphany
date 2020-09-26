@@ -65,7 +65,7 @@ class ArgumentGraph extends Component {
          * Finally, pass callbacks up to parent 
          */
         this.props.setNodeCallbacks('updateNode', this.updateNode);
-        this.props.setNodeCallbacks('deleteNode', this.deleteNode); 
+        this.props.setNodeCallbacks('deleteNode', this.deleteNode);
 
 
     }
@@ -123,51 +123,83 @@ class ArgumentGraph extends Component {
     }
 
 
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     // refactor method to reduce repetition and remove two other functions 
     loadNodes = () => {
 
-        // // Grab theses (currently at most one)
-        for (let i = 0; i < this.props.thesis.length; i++) {
-            this.addNode({
-                creationMethod: 'static',
-                targetEleID: this.props.thesis[i].targetArgument || this.state.currentThesisNodeID,
-                edgeType: 'qualify',
-                argumentData: this.props.thesis[i]
-            });
+        /**
+         * We have to insert nodes in a particular order. The thesis
+         * must come before all 1st degree arguments, all 2nd degree
+         * arguments before 3rd degree arguments, etc.
+         */
+        const staticArguments = []
+        .concat(this.props.thesis)
+        .concat(this.props.qual_arguments)
+        .concat(this.props.pro_arguments)
+        .concat(this.props.con_arguments)
+        .sort( (arga, argb) =>  arga.degree - argb.degree ); 
+
+        console.log(staticArguments);
+
+        for (let idx = 0; idx < staticArguments.length; ++idx) {
+
+            const argType = staticArguments[idx].type;
+            switch (argType) {
+                case 'thesis':
+                    this.addNode({
+                        creationMethod: 'static',
+                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+                        edgeType: 'qualify',
+                        argumentData: staticArguments[idx]
+                    });
+                break;
+                case 'qual_arguments':
+                    this.addNode({
+                        creationMethod: 'static',
+                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+                        edgeType: 'qualify',
+                        argumentData: staticArguments[idx]
+                    });
+                break;
+                case 'pro_arguments':
+                    this.addNode({
+                        creationMethod: 'static',
+                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+                        edgeType: 'support',
+                        argumentData: staticArguments[idx]
+                    });
+                break;
+                case 'con_arguments':
+                    this.addNode({
+                        creationMethod: 'static',
+                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+                        edgeType: 'oppose',
+                        argumentData: staticArguments[idx]
+                    });
+                break;
+                default: 
+                    console.log('static argument type:', argType);
+                    throw Error ('Cannot load static argument data: unknown argument type');
+            }
         }
 
-        // // Grab qualifying arguments
-        for (let i = 0; i < this.props.qual_arguments.length; i++) {
-            this.addNode({
-                creationMethod: 'static',
-                targetEleID: this.props.qual_arguments[i].targetArgument || this.state.currentThesisNodeID,
-                edgeType: 'qualify',
-                argumentData: this.props.qual_arguments[i]
-            });
-        }
-
-        // // Grab pro arguments
-        for (let i = 0; i < this.props.pro_arguments.length; i++) {
-            this.addNode({
-                creationMethod: 'static',
-                targetEleID: this.props.pro_arguments[i].targetArgument || this.state.currentThesisNodeID,
-                edgeType: 'support',
-                argumentData: this.props.pro_arguments[i]
-            });
-        }
-
-        // Grab con arguments 
-        for (let i = 0; i < this.props.con_arguments.length; i++) {
-            this.addNode({
-                creationMethod: 'static',
-                targetEleID: this.props.con_arguments[i].targetArgument || this.state.currentThesisNodeID,
-                edgeType: 'oppose',
-                argumentData: this.props.con_arguments[i]
-            });
-        }
     }
 
-
+    getArgumentArrayByType = (type) => {
+        switch (type) {
+            case 'thesis': return this.props.thesis;
+            case 'pro_arguments': return this.props.pro_arguments;
+            case 'con_arguments': return this.props.con_arguments;
+            case 'qual_arguments': return this.props.qual_arguments;
+            default: throw Error("no target array found");
+        }
+    }
     /**
  * 
  * @param {*} id The id associated with the argument node that is being updated
@@ -178,25 +210,7 @@ class ArgumentGraph extends Component {
         console.log(type);
 
 
-        let targetArray;
-        switch (type) {
-            case 'thesis':
-                targetArray = this.props.thesis;
-                break;
-            case 'pro_arguments':
-                targetArray = this.props.pro_arguments;
-                break;
-            case 'con_arguments':
-                targetArray = this.props.con_arguments;
-                break;
-            case 'qual_arguments':
-                targetArray = this.props.qual_arguments;
-                break; 
-            default:
-                throw Error("no target array found");
-                break;
-        }
-
+        let targetArray = this.getArgumentArrayByType(type);
 
         for (let i = 0; i < targetArray.length; ++i) {
             assert(targetArray[i] !== undefined);
@@ -212,6 +226,9 @@ class ArgumentGraph extends Component {
 
     }
 
+
+
+
     updateStoreAndGetData = (nodeInitInfo) => {
 
         console.log('adding argument to store');
@@ -219,19 +236,7 @@ class ArgumentGraph extends Component {
 
         console.log(nodeInitInfo.argumentData.type);
 
-        let targetArray;
-        switch (nodeInitInfo.argumentData.type) {
-            case 'pro_arguments':
-                targetArray = this.props.pro_arguments;
-                break;
-            case 'con_arguments':
-                targetArray = this.props.con_arguments;
-                break;
-            case 'qual_arguments':
-                targetArray = this.props.qual_arguments;
-            default:
-                throw Error("no target array found");
-        }
+        let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type); 
 
 
         for (let i = 0; i < targetArray.length; ++i) {
@@ -265,24 +270,7 @@ class ArgumentGraph extends Component {
         this.props.onSetTargetArgument(ele, updatedArgument);
 
 
-        let targetArray;
-        switch (nodeInitInfo.argumentData.type) {
-            case 'thesis':
-                targetArray = this.props.thesis;
-                break;
-            case 'pro_arguments':
-                targetArray = this.props.pro_arguments;
-                break;
-            case 'con_arguments':
-                targetArray = this.props.con_arguments;
-                break;
-            case 'qual_arguments':
-                targetArray = this.props.qual_arguments;
-                break;
-            default:
-                throw Error("no target array found");
-        }
-
+        let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type); 
 
         for (let i = 0; i < targetArray.length; ++i) {
             const arg = targetArray[i];
@@ -404,6 +392,13 @@ class ArgumentGraph extends Component {
         this.runLayout()
     }
 
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     runLayout = () => {
         // create new layout
         let layout = this.myCyRef.$().layout(graphLayoutOptions);
@@ -464,8 +459,5 @@ const mapStateToProps = state => {
         thesis: state.thesis
     };
 };
-
-export const updateNode = ArgumentGraph.updateNode;
-export const deleteNode = ArgumentGraph.deleteNode;
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArgumentGraph); 

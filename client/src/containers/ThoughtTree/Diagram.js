@@ -55,7 +55,10 @@ class Diagram extends Component {
     }
 
     closePanelHandler = () => {
-        this.setState({ panelContent: null, mapGridSize: 12, showPanel: false });
+        this.setState({ 
+            panelContent: null, 
+            mapGridSize: 12, 
+            showPanel: false });
     }
 
     render() {

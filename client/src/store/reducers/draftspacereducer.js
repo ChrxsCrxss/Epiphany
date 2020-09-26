@@ -75,7 +75,7 @@ const draftSpaceReducer = (state = initialState, action) => {
                     ...state,
                     [action.payload.type]: state[action.payload.type].concat({
                         ...action.payload,
-                        targetArgument: null
+                        targetArgument: action.payload.targetArgument || null
                     }),
                     title: '',
                     content: '',

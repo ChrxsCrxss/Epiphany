@@ -26,7 +26,8 @@ class draftSpace extends Component {
       id : uuidv4(),
       type : this.state.selectedArgumentType,
       title : this.props.title,
-      content : this.props.content
+      content : this.props.content,
+      degree : 0
     });
   }
 
