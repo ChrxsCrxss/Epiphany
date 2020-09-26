@@ -9,6 +9,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { connect } from 'react-redux';
 import * as actions from "../../../store/actions/index";
 
+
+
 class Panel extends Component {
 
     state = {
