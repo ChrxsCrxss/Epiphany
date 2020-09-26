@@ -87,7 +87,7 @@ class Diagram extends Component {
         for (let i = 0; i < this.props.thesis.length; i++) {
             this.addNode({
                 creationMethod: 'static',
-                targetEleID: this.state.currentThesisNodeID,
+                targetEleID: this.props.thesis[i].targetArgument || this.state.currentThesisNodeID,
                 edgeType: 'qualify',
                 argumentData: this.props.thesis[i]
             });
@@ -97,7 +97,7 @@ class Diagram extends Component {
         for (let i = 0; i < this.props.qual_arguments.length; i++) {
             this.addNode({
                 creationMethod: 'static',
-                targetEleID: this.state.currentThesisNodeID,
+                targetEleID: this.props.qual_arguments[i].targetArgument || this.state.currentThesisNodeID,
                 edgeType: 'qualify',
                 argumentData: this.props.qual_arguments[i]
             });
@@ -107,16 +107,17 @@ class Diagram extends Component {
         for (let i = 0; i < this.props.pro_arguments.length; i++) {
             this.addNode({
                 creationMethod: 'static',
-                targetEleID: this.state.currentThesisNodeID,
+                targetEleID: this.props.pro_arguments[i].targetArgument || this.state.currentThesisNodeID,
                 edgeType: 'support',
                 argumentData: this.props.pro_arguments[i]
             });
         }
+
         // Grab con arguments 
         for (let i = 0; i < this.props.con_arguments.length; i++) {
             this.addNode({
                 creationMethod: 'static',
-                targetEleID: this.state.currentThesisNodeID,
+                targetEleID: this.props.con_arguments[i].targetArgument || this.state.currentThesisNodeID,
                 edgeType: 'oppose',
                 argumentData: this.props.con_arguments[i]
             });
@@ -280,6 +281,56 @@ class Diagram extends Component {
         return nodeInitInfo;
     }
 
+    onSetTargetArgumentAndGetData = (nodeInitInfo) => {
+
+        const ele = {
+            id: nodeInitInfo.argumentData.id,
+            type: nodeInitInfo.argumentData.type
+        }; 
+
+        const updatedArgument = {
+            ...nodeInitInfo.argumentData,
+            targetArgument: nodeInitInfo.targetEleID
+
+        }
+
+        this.props.onSetTargetArgument(ele, updatedArgument); 
+
+
+        let targetArray;
+        switch (nodeInitInfo.argumentData.type) {
+            case 'thesis':
+                targetArray = this.props.thesis;
+                break;
+            case 'pro_arguments':
+                targetArray = this.props.pro_arguments;
+                break;
+            case 'con_arguments':
+                targetArray = this.props.con_arguments;
+                break;
+            case 'qual_arguments':
+                targetArray = this.props.qual_arguments;
+            default:
+                throw Error("no target array found");
+        }
+
+
+        for (let i = 0; i < targetArray.length; ++i) {
+            const arg = targetArray[i];
+            console.log("checking that store was updated: ", arg);
+            if (arg.id === nodeInitInfo.argumentData.id) {
+                console.log('successfully added argument to store');
+
+                return { ...nodeInitInfo, argumentData: { ...arg } }
+            }
+        }
+
+        console.log('Could not successfully get data from store');
+        return nodeInitInfo;
+
+
+    }
+
     getEdgeColorFromEdgeType = (edgeType) => {
 
         switch (edgeType) {
@@ -302,9 +353,20 @@ class Diagram extends Component {
  *    as neighbor(elementToBeRemoved) => elementToBeRemoved
  */
 
-        // Get edges (and their sources) coming into the nodes in the collection.
-        console.log(this.myCyRef.$(`#${id}`).incomers());
+        /**
+         * Get edges (and their sources) coming into the nodes in the collection.
+         * This call will return an array of edges and source nodes. We can get the
+         * type of edge and the source from each source. We won't need to use the 
+         * nodes themselves to update the UI. 
+         * 
+         * HOWEVER, there are cases where the argument type of the node changes, and
+         * we will therefore have to switch arguments between arrays. 
+         * 
+         * 
+         */
 
+        const Incomers = this.myCyRef.$(`#${id}`).incomers();
+        const Outgoers = this.myCyRef.$(`#${id}`).outgoers();
 
         const elementToBeRemoved = this.myCyRef.$(`#${id}`);
         this.myCyRef.remove(elementToBeRemoved);
@@ -338,6 +400,10 @@ class Diagram extends Component {
             nodeInitInfo = this.updateStoreAndGetData(nodeInitInfo);
         }
 
+        if (nodeInitInfo.argumentData.targetArgument === null) {
+            nodeInitInfo = this.onSetTargetArgumentAndGetData(nodeInitInfo);
+        }
+
         this.myCyRef.add({
             group: 'nodes',
             data: {
@@ -356,10 +422,12 @@ class Diagram extends Component {
 
         this.myCyRef.add({
             group: 'edges',
-            data: { 
-                id: newEdgeID, 
-                source: nodeInitInfo.argumentData.id, 
-                target: nodeInitInfo.targetEleID },
+            data: {
+                id: newEdgeID,
+                type: nodeInitInfo.edgeType,
+                source: nodeInitInfo.argumentData.id,
+                target: nodeInitInfo.argumentData.targetArgument || this.state.currentThesisNodeID
+            },
             style: { 'line-color': edgeColor }
         });
 
@@ -443,6 +511,7 @@ class Diagram extends Component {
 const mapDispatchToProps = dispatch => {
     return {
         onDynamicAddNode: (payload) => dispatch(actions.addArgument(payload)),
+        onSetTargetArgument: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument)),
     };
 }
 

@@ -40,7 +40,7 @@ const draftSpaceReducer = (state = initialState, action) => {
             // the action, so the map function will contain the target id
             if (state.selectedArgumentType === 'thesis') {
                 state.thesis.pop();
-                state.push({ id : action.targetArgumentId})
+                state.push({ id: action.targetArgumentId })
             }
 
             return (
@@ -74,10 +74,11 @@ const draftSpaceReducer = (state = initialState, action) => {
                 {
                     ...state,
                     [action.payload.type]: state[action.payload.type].concat({
-                        ...action.payload
+                        ...action.payload,
+                        targetArgument: null
                     }),
                     title: '',
-                    content: ''
+                    content: '',
                 }
             );
             break;
@@ -91,6 +92,24 @@ const draftSpaceReducer = (state = initialState, action) => {
                 }
             );
         }
+        case actionTypes.CHANGE_ARGUMENT_TYPE:
+
+            return (
+                {
+                    ...state,
+
+                    [action.payload.newArgumentType]: state[action.payload.newArgumentType].concat(
+                        state[action.payload.oldArgumentType].find(element => element.id = action.targetId)
+                    ),
+
+                    [action.payload.oldArgumentType]: state[action.payload.oldArgumentType].filter(argument => {
+                        return argument.id != action.payload.targetId
+                    })
+
+
+                }
+            )
+            break;
 
         // return { ...newState, title: '', content: '' };
         default:
