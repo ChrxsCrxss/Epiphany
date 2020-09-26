@@ -2,8 +2,11 @@ import React, { Component } from "react";
 import Card from '@material-ui/core/Card';
 import Grid from '@material-ui/core/Grid';
 import Panel from "../../components/UI/Panel/Panel";
-import ArgumentGraph from './ArgumentGraph/ArgumentGraph'; 
+import ArgumentGraph from './ArgumentGraph/ArgumentGraph';
+import axios from "axios";
+import withErrorHandler from '../../components/hoc/withErrorHandler'
 
+const instance = axios.create();
 
 
 /**
@@ -29,12 +32,27 @@ class Diagram extends Component {
         deleteNode: () => { throw Error('callback undefined'); },
     }
 
+
+
+    async componentDidMount() {
+
+        console.log('fetching data');
+
+        // Make an async request to the backend using this method 
+        const response = await instance.post(`http://localhost:5000/userData`, {
+            request : 'hello'
+        });
+
+        alert(response);
+    }
+
+
     setNodeCallbacks = (type, func) => {
 
         if (type === 'updateNode') {
-            this.setState({ updateNode : func });
+            this.setState({ updateNode: func });
         } else if (type === 'deleteNode') {
-            this.setState({ deleteNode : func });
+            this.setState({ deleteNode: func });
         } else {
             throw Error('unknown callback type ');
         }
@@ -55,10 +73,11 @@ class Diagram extends Component {
     }
 
     closePanelHandler = () => {
-        this.setState({ 
-            panelContent: null, 
-            mapGridSize: 12, 
-            showPanel: false });
+        this.setState({
+            panelContent: null,
+            mapGridSize: 12,
+            showPanel: false
+        });
     }
 
     render() {
@@ -71,7 +90,7 @@ class Diagram extends Component {
                     <Grid item sm={this.state.mapGridSize}>
 
                         <Card>
-                            <ArgumentGraph 
+                            <ArgumentGraph
                                 nodeClickedHandler={this.nodeClickedHandler}
                                 setNodeCallbacks={this.setNodeCallbacks}
                             />
@@ -98,4 +117,5 @@ class Diagram extends Component {
     }
 }
 
-export default Diagram; 
+
+export default withErrorHandler(Diagram, instance); 

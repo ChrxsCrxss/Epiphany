@@ -60,7 +60,7 @@ class RecommendationDeck extends Component {
         });
 
         
-        // This will, at the very least, turn of the spinner
+        // This will, at the very least, turn off the spinner
         this.setState({ loadingRecommendations : false });
         
 
