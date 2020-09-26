@@ -60,6 +60,7 @@ class ArgumentGraph extends Component {
          */
         this.setState({ currentThesisNodeID: initThesisID }, () => this.loadNodes());
 
+        this.runLayout();
 
         /**
          * Finally, pass callbacks up to parent 
@@ -144,8 +145,6 @@ class ArgumentGraph extends Component {
         .concat(this.props.pro_arguments)
         .concat(this.props.con_arguments)
         .sort( (arga, argb) =>  arga.degree - argb.degree ); 
-
-        console.log(staticArguments);
 
         for (let idx = 0; idx < staticArguments.length; ++idx) {
 
@@ -389,7 +388,7 @@ class ArgumentGraph extends Component {
         });
 
 
-        this.runLayout()
+        this.runLayout();
     }
 
 

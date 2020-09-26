@@ -62,16 +62,6 @@ const draftDeckControls = (props) => {
                 variant="contained"
                 color="secondary"
                 size="small"
-                startIcon={<InsertChartOutlinedRoundedIcon/>}
-                onClick={props.seeData}
-            >
-                See DashBoard
-            </Button>
-
-            <Button
-                variant="contained"
-                color="secondary"
-                size="small"
                 startIcon={<DeleteIcon />}
                 onClick={props.deleted}
             >

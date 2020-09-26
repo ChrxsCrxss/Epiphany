@@ -6,7 +6,6 @@ import Aux from "../../components/hoc/Aux";
 import DraftDeckControls from "./DraftDeckControls/DrafDeckControls";
 import Grid from '@material-ui/core/Grid';
 import RecommendationDeck from "../RecommendationDeck/RecommendationDeck";
-import DashBoard from "../DashBoard/DashBoard";
 import { withRouter } from "react-router-dom";
 import axios from 'axios'
 
@@ -15,7 +14,6 @@ class DraftDeck extends Component {
 
     state = {
         showRecommendations: false,
-        showDashBoard: false
     };
 
 
@@ -36,16 +34,6 @@ class DraftDeck extends Component {
     toggleTalkModeHandler = () => {
         alert("Switched to talk mode");
     };
-
-    toggleDashBoard = () => {
-
-        this.setState((prevState) => {
-            return {
-                showDashBoard: !prevState.showDashBoard
-            }
-        });
-
-    }
 
     toggleRecommendationDeck = () => {
         this.setState((prevState) => {
@@ -75,7 +63,6 @@ class DraftDeck extends Component {
                     talked={this.toggleTalkModeHandler}
                     submitted={this.toggleRecommendationDeck}
                     showVideo={this.props.showvideomodal}
-                    seeData={this.toggleDashBoard}
                     history={this.props.history}
                 />
 
@@ -95,17 +82,6 @@ class DraftDeck extends Component {
                         </Grid>
                         : null
                     }
-
-                    {this.state.showDashBoard ?
-                        <Grid item sm={12} className={classes.RecommendationDeck}>
-                            <DashBoard
-                                draftSpaceContent={this.state.draftSpaceContent}
-                            />
-                        </Grid>
-                        : null
-                    }
-
-
 
                 </Grid>
 
