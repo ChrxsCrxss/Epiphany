@@ -29,7 +29,7 @@ router.get("/logout", (req, res) => {
 });
 
 // auth with google
-router.get("/google", passport.authenticate("google"));
+router.get("/google", passport.authenticate("google", { scope: ['profile'] }));
 
 // redirect to home page after successfully login via google
 router.get(

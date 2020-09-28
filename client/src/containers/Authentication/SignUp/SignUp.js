@@ -1,7 +1,7 @@
 import Header from "../Header";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
-
+import axios from 'axios'
 export default class Signup extends Component {
   state = {
     user: {},
@@ -10,7 +10,7 @@ export default class Signup extends Component {
   };
 
   componentDidMount() {
-    fetch("http://localhost:5000/auth/login/success", {
+    axios.get("http://localhost:5000/auth/login/success", {
       method: "GET",
       credentials: "include",
       headers: {

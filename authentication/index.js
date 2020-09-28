@@ -8,28 +8,21 @@ const mongoose = require("mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const cookieParser = require('cookie-parser');
 const cookieSession = require("cookie-session");
+const findOrCreate = require("mongoose-findorcreate");
 
 // - - - - - - - - - - - Set up Express Server and Middleware - - - - - - - - - 
 const app = express();
 
 app.use(cors());
 
-// set up routes
-app.use("/auth", authRoutes);
-
 // initalize passport middleware 
 app.use(passport.initialize());
 // deserialize cookie from the browser
 app.use(passport.session());
 
+
 // set up cors to allow us to accept requests from our client
-app.use(
-    cors({
-        origin: "http://localhost:3000", // allow to server to accept request from different origin
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-        credentials: true // allow session cookie from browser to pass through
-    })
-);
+app.use(cors());
 
 app.use(
     cookieSession({
@@ -42,10 +35,14 @@ app.use(
 // parse cookies
 app.use(cookieParser());
 
+// set up routes
+app.use("/auth", authRoutes);
+
 // - - - - - - - - - -  Connect to MongoDB and create Schema - - - - - - - - - -  
-mongoose.connect("mongodb://localhost:27017/userDB", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+// Connect to remote Mongo Atlas database
+mongoose.connect("mongodb+srv://ChrisCross:Crossmongo@cluster0.wwh6v.mongodb.net/impactHackDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 
 const userSchema = new mongoose.Schema({
@@ -53,6 +50,8 @@ const userSchema = new mongoose.Schema({
     password: String,
     googleId: String,
 });
+
+userSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', userSchema);
 
@@ -82,9 +81,8 @@ passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "http://localhost:5000/auth/google/redirect",
-    // userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
 },
-    async (accessToken, refreshToken, profile, cb) => {
+    async (accessToken, refreshToken, profile, done) => {
 
         // find current user in UserModel
         const currentUser = await User.findOne({
@@ -98,25 +96,22 @@ passport.use(new GoogleStrategy({
                 twitterId: profile._json.id_str,
                 profileImageUrl: profile._json.profile_image_url
             }).save();
+            
             if (newUser) {
                 done(null, newUser);
             }
         }
 
-        // console.log(profile);
+        console.log(profile);
 
-        // User.findOrCreate({
-        //     googleId: profile.id
-        // }, function (err, user) {
-        //     return cb(err, user);
-        // });
+        User.findOrCreate({
+            googleId: profile.id
+        }, function (err, user) {
+            return done(err, user);
+        });
 
     })
 );
-
-
-
-
 
 const authCheck = (req, res, next) => {
     next();
