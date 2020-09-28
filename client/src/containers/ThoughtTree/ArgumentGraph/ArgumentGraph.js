@@ -29,6 +29,11 @@ class ArgumentGraph extends Component {
 
     componentDidMount() {
 
+        /**
+         * We will need to initialize the ArgumentGraphController BEFORE
+         * this, and pass those arguments as callbacks, i.e., 
+         * defendCallback: ArgumentGraphInterface.addNode 
+         */
         const commands = ctxMenuCmdsConfig({
             defendCallback: this.addNode,
             attackCallback: this.addNode,
@@ -63,7 +68,8 @@ class ArgumentGraph extends Component {
         this.runLayout();
 
         /**
-         * Finally, pass callbacks up to parent 
+         * Finally, pass callbacks up to parent. This will eventually be
+         * ArgumentGraphInterface.updateNode and ArgumentGraphInterface.deleteNode
          */
         this.props.setNodeCallbacks('updateNode', this.updateNode);
         this.props.setNodeCallbacks('deleteNode', this.deleteNode);
