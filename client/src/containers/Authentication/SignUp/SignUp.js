@@ -1,177 +1,65 @@
-import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import classes from "./SignUp.module.css";
-import axios from "axios";
+import Header from "../Header";
+import PropTypes from "prop-types";
+import React, { Component } from "react";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+export default class Signup extends Component {
+  state = {
+    user: {},
+    error: null,
+    authenticated: false
+  };
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
-
-const SignUp = (props) => {
-
-  const [userAuthInfo, setUserAuthInfo] = useState({
-    firstName: null,
-    lastName: null,
-    email: null,
-    password: null
-  });
-
-  const composeAuthProfile = (event) => {
-
-    const value = event.target.value;
-    const key = event.target.id;
-
-    console.log(key, value); 
-
-    setUserAuthInfo((prevState) => {
-
-      let newState = {...prevState}; 
-      newState[key] = value; 
-      console.log(newState);
-      return newState;
-
-    });
-
+  componentDidMount() {
+    fetch("http://localhost:5000/auth/login/success", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Credentials": true
+      }
+    })
+      .then(response => {
+        if (response.status === 200) return response.json();
+        throw new Error("failed to authenticate user");
+      })
+      .then(responseJson => {
+        this.setState({
+          authenticated: true,
+          user: responseJson.user
+        });
+      })
+      .catch(error => {
+        this.setState({
+          authenticated: false,
+          error: "Failed to authenticate user"
+        });
+      });
   }
 
-  const makeAuthAPIRequest = async (event) => {
-
-    event.preventDefault(); 
-
-    const response = await axios.post('http://localhost:5000/', userAuthInfo);
-    console.log(response);
-
-
-  }
-
-  const classes = useStyles();
-
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-                onChange={(event) => composeAuthProfile(event)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                onChange={(event) => composeAuthProfile(event)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={(event) => composeAuthProfile(event)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={(event) => composeAuthProfile(event)}
-              />
-            </Grid>
-          </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.submit}
-            onClick={(event) => makeAuthAPIRequest(event)}
-          >
-            Sign Up
-          </Button>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid>
-          </Grid>
-        </form>
+  render() {
+    const { authenticated } = this.state;
+    return (
+      <div>
+        <Header
+          authenticated={authenticated}
+          handleNotAuthenticated={this._handleNotAuthenticated}
+        />
+        <div>
+          {!authenticated ? (
+            <h1>Welcome!</h1>
+          ) : (
+            <div>
+              <h1>You have login succcessfully!</h1>
+              <h2>Welcome {this.state.user.name}!</h2>
+            </div>
+          )}
+        </div>
       </div>
-      <Box mt={5}>
-        <Copyright />
-      </Box>
-    </Container>
-  );
-}
+    );
+  }
 
-export default SignUp; 
+  _handleNotAuthenticated = () => {
+    this.setState({ authenticated: false });
+  };
+}
