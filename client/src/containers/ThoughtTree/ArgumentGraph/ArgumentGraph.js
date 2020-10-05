@@ -146,11 +146,30 @@ class ArgumentGraph extends Component {
          * arguments before 3rd degree arguments, etc.
          */
         const staticArguments = []
-        .concat(this.props.thesis)
-        .concat(this.props.qual_arguments)
-        .concat(this.props.pro_arguments)
-        .concat(this.props.con_arguments)
-        .sort( (arga, argb) =>  arga.degree - argb.degree ); 
+            .concat(this.props.thesis)
+            .concat(this.props.qual_arguments)
+            .concat(this.props.pro_arguments)
+            .concat(this.props.con_arguments)
+            .sort((arga, argb) => arga.degree - argb.degree);
+
+        if (staticArguments.length === 0) {
+
+            const id  = uuidv4()
+            this.addNode({
+                creationMethod: 'dynamic',
+                targetEleID: id,
+                edgeType: 'qualify',
+                argumentData: {
+                    id: id,
+                    type: 'thesis',
+                    title: 'This is your thesis statement',
+                    content: 'Begin your analysis here'
+                }
+            });
+            return
+        }
+
+
 
         for (let idx = 0; idx < staticArguments.length; ++idx) {
 
@@ -163,7 +182,7 @@ class ArgumentGraph extends Component {
                         edgeType: 'qualify',
                         argumentData: staticArguments[idx]
                     });
-                break;
+                    break;
                 case 'qual_arguments':
                     this.addNode({
                         creationMethod: 'static',
@@ -171,7 +190,7 @@ class ArgumentGraph extends Component {
                         edgeType: 'qualify',
                         argumentData: staticArguments[idx]
                     });
-                break;
+                    break;
                 case 'pro_arguments':
                     this.addNode({
                         creationMethod: 'static',
@@ -179,7 +198,7 @@ class ArgumentGraph extends Component {
                         edgeType: 'support',
                         argumentData: staticArguments[idx]
                     });
-                break;
+                    break;
                 case 'con_arguments':
                     this.addNode({
                         creationMethod: 'static',
@@ -187,10 +206,10 @@ class ArgumentGraph extends Component {
                         edgeType: 'oppose',
                         argumentData: staticArguments[idx]
                     });
-                break;
-                default: 
+                    break;
+                default:
                     console.log('static argument type:', argType);
-                    throw Error ('Cannot load static argument data: unknown argument type');
+                    throw Error('Cannot load static argument data: unknown argument type');
             }
         }
 
@@ -241,7 +260,7 @@ class ArgumentGraph extends Component {
 
         console.log(nodeInitInfo.argumentData.type);
 
-        let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type); 
+        let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type);
 
 
         for (let i = 0; i < targetArray.length; ++i) {
@@ -275,7 +294,7 @@ class ArgumentGraph extends Component {
         this.props.onSetTargetArgument(ele, updatedArgument);
 
 
-        let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type); 
+        let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type);
 
         for (let i = 0; i < targetArray.length; ++i) {
             const arg = targetArray[i];
@@ -382,16 +401,18 @@ class ArgumentGraph extends Component {
 
         const newEdgeID = `edge-${uuidv4()}`;
 
-        this.myCyRef.add({
-            group: 'edges',
-            data: {
-                id: newEdgeID,
-                type: nodeInitInfo.edgeType,
-                source: nodeInitInfo.argumentData.id,
-                target: nodeInitInfo.argumentData.targetArgument || this.state.currentThesisNodeID
-            },
-            style: { 'line-color': edgeColor }
-        });
+        if (nodeInitInfo.argumentData.type !== 'thesis') {
+            this.myCyRef.add({
+                group: 'edges',
+                data: {
+                    id: newEdgeID,
+                    type: nodeInitInfo.edgeType,
+                    source: nodeInitInfo.argumentData.id,
+                    target: nodeInitInfo.argumentData.targetArgument || this.state.currentThesisNodeID
+                },
+                style: { 'line-color': edgeColor }
+            });
+        }
 
 
         this.runLayout();
@@ -461,7 +482,8 @@ const mapStateToProps = state => {
         pro_arguments: state.pro_arguments,
         con_arguments: state.con_arguments,
         qual_arguments: state.qual_arguments,
-        thesis: state.thesis
+        thesis: state.thesis,
+        isAuthenticated: state.isAuthenticated
     };
 };
 

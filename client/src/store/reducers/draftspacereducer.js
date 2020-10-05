@@ -17,6 +17,7 @@ const initialState = {
     pro_arguments: [],
     con_arguments: [],
     qual_arguments: [],
+    isAuthenticated: false,
 
 };
 

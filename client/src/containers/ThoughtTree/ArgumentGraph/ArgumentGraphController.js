@@ -4,7 +4,11 @@
  * TODO: we need to bind the this from the ArgumentGraph, so we 
  * can access its state and props. 
  */
-export default ArgumentGraphController = () => {
+export default function ArgumentGraphController() {
+
+    // state
+    // props
+    // myCyRef
 
     const loadNodes = () => {
 

@@ -36,14 +36,14 @@ class Diagram extends Component {
 
     async componentDidMount() {
 
-        console.log('fetching data');
+        // console.log('fetching data');
 
-        // Make an async request to the backend using this method 
-        const response = await instance.post(`http://localhost:5000/userData`, {
-            request : 'hello'
-        });
+        // // Make an async request to the backend using this method 
+        // const response = await instance.post(`http://localhost:5000/userData`, {
+        //     request : 'hello'
+        // });
 
-        alert(response);
+        // alert(response);
     }
 
 
