@@ -6,10 +6,6 @@ import AboutBlurb from "./components/AboutBlurb/AboutBlurb";
 import Layout from "./containers/Layout/Layout";
 import asyncComponent from "./components/hoc/AsyncComponent/AsyncComponent"; 
 
-const asyncSignUp = asyncComponent(() => {
-    return import("./containers/Authentication/SignUp/SignUp");
-});
-
 const asyncDiagram = asyncComponent(() => {
     return import("./containers/ThoughtTree/Diagram.js");
 });
@@ -22,7 +18,6 @@ export default class App extends Component {
                 <Layout>
                     <Switch>
                         <Route path='/' exact component={asyncDiagram}/>
-                        <Route path='/login' exact component={asyncSignUp} />
                         <Route path='/test' exact render={() => (<h1>Test Routing Page</h1>)} />
                         <Route path='/about' exact component={AboutBlurb} />
                     </Switch>

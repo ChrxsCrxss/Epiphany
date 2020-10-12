@@ -40,7 +40,7 @@ export default class toolbar extends Component {
 
                         <Auth />
 
-                        {/* <MenuRoundedIcon
+                        <MenuRoundedIcon
                             aria-controls="simple-menu"
                             aria-haspopup="true"
                             onClick={this.handleClick}
@@ -56,10 +56,9 @@ export default class toolbar extends Component {
                         >
                             <Link to="/"><MenuItem>Home</MenuItem></Link>
                             <Link to="/test"><MenuItem>Test</MenuItem></Link>
-                            <Link to="/login"><MenuItem>Login</MenuItem></Link>
                             <Link to="/about"><MenuItem>About</MenuItem></Link>
                             <Link to="/thoughtTree"><MenuItem>ThoughtTree</MenuItem></Link>
-                        </Menu> */}
+                        </Menu>
 
                     </Toolbar>
                 </Paper>
