@@ -6,7 +6,7 @@
 const graphLayoutOptions = {
     name: 'breadthfirst',
 
-    fit: true, // whether to fit the viewport to the graph
+    fit: false, // whether to fit the viewport to the graph
     directed: false, // whether the tree is directed downwards (or edges can point in any direction if false)
     padding: 30, // padding on fit
     circle: false, // put depths in concentric circles if true, put depths top down if false

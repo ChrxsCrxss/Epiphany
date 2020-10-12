@@ -60,13 +60,13 @@ class Layout extends Component {
                     {this.props.children}
 
                     
-                    <InspireButton
+                    {/* <InspireButton
                         show={this.toggleVideoModal}
-                    />
+                    /> */}
                 </main>
 
 
-                <Footer />
+                {/* <Footer /> */}
 
             </Aux>
 

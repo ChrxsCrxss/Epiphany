@@ -67,7 +67,7 @@ const draftSpaceReducer = (state = initialState, action) => {
             break;
         case actionTypes.ADD_ARGUMENT:
 
-            if (action.payload.type === 'thesis') {
+            if (action.payload.type === 'thesis' || state.thesis.length !== 0) {
                 state.thesis.pop();
             }
 

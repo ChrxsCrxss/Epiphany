@@ -1,8 +1,8 @@
 
 /* This is how the thoughtTree will be style  */
  .DiagramComponent {
-    width: 600px;
-    height: 600px;
+    width: 100%;
+    height: 100%;
     border: solid 1px black;
     background-color: white;
   }

@@ -8,8 +8,9 @@ import { Link } from "react-router-dom";
 import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-
 import RemoveRedEyeTwoToneIcon from '@material-ui/icons/RemoveRedEyeTwoTone';
+import Paper from '@material-ui/core/Paper';
+
 
 export default class toolbar extends Component {
 
@@ -30,18 +31,19 @@ export default class toolbar extends Component {
 
     render() {
         return (
-            <header>
+            <header className={classes.Header}>
+                <Paper>
                     <Toolbar className={classes.Toolbar}>
 
-                        <RemoveRedEyeTwoToneIcon/>
+                        <RemoveRedEyeTwoToneIcon />
 
-                        <MenuRoundedIcon 
-                        aria-controls="simple-menu" 
-                        aria-haspopup="true" 
-                        onClick={this.handleClick} 
-                        style={{cursor: 'pointer', color : 'red'}}
+                        <MenuRoundedIcon
+                            aria-controls="simple-menu"
+                            aria-haspopup="true"
+                            onClick={this.handleClick}
+                            style={{ cursor: 'pointer', color: 'red' }}
                         />
-                        
+
                         <Menu
                             id="simple-menu"
                             anchorEl={this.state.anchorElem}
@@ -50,8 +52,8 @@ export default class toolbar extends Component {
                             onClose={this.handleClose}
                         >
                             {/* <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                            <MenuItem onClick={this.handleClose}>My account</MenuItem>
-                            <MenuItem onClick={this.handleClose}>Logout</MenuItem> */}
+    <MenuItem onClick={this.handleClose}>My account</MenuItem>
+    <MenuItem onClick={this.handleClose}>Logout</MenuItem> */}
 
                             <Link to="/"><MenuItem>Home</MenuItem></Link>
                             <Link to="/test"><MenuItem>Test</MenuItem></Link>
@@ -60,18 +62,19 @@ export default class toolbar extends Component {
                             <Link to="/thoughtTree"><MenuItem>ThoughtTree</MenuItem></Link>
                         </Menu>
 
-{/* 
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                        {/* 
+<IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
 
-                            <NavLink to="/test"> <MenuRoundedIcon /> </NavLink>
+    <NavLink to="/test"> <MenuRoundedIcon /> </NavLink>
 
-                        </IconButton>
-                        <Typography variant="h6" className={classes.title}>
-                            News
-                        </Typography>
-                        <Button color="inherit"><NavLink to="/">Home</NavLink></Button>
-                        <Button color="inherit"><NavLink to="/test">Test</NavLink></Button> */}
+</IconButton>
+<Typography variant="h6" className={classes.title}>
+    News
+</Typography>
+<Button color="inherit"><NavLink to="/">Home</NavLink></Button>
+<Button color="inherit"><NavLink to="/test">Test</NavLink></Button> */}
                     </Toolbar>
+                </Paper>
             </header>
         )
 

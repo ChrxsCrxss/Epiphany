@@ -12,8 +12,13 @@ import * as actions from '../../../store/actions/index';
 import ctxMenuCmdsConfig from "../CytoscapeConfig/ctxMenuCmdsConfig";
 import assert from 'assert';
 
+import navigator from 'cytoscape-navigator'; 
+import gridGuide from 'cytoscape-grid-guide'; 
+
 cytoscape.use(cxtmenu);
 
+gridGuide( cytoscape );
+navigator( cytoscape );
 
 
 class ArgumentGraph extends Component {
@@ -47,6 +52,65 @@ class ArgumentGraph extends Component {
 
         this.setState({ cyCoreListeners: this.myCyRef._private.emitter.listeners });
 
+        this.myCyRef.navigator({
+            container: true // html dom element
+          , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
+          , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
+          , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
+          , dblClickDelay: 200 // milliseconds
+          , removeCustomContainer: true // destroy the container specified by user on plugin destroy
+          , rerenderDelay: 100 // ms to throttle rerender updates to the panzoom for performance
+        }); 
+
+        const options = {
+            // On/Off Modules
+            /* From the following four snap options, at most one should be true at a given time */
+            snapToGridOnRelease: true, // Snap to grid on release
+            snapToGridDuringDrag: false, // Snap to grid during drag
+            snapToAlignmentLocationOnRelease: false, // Snap to alignment location on release
+            snapToAlignmentLocationDuringDrag: false, // Snap to alignment location during drag
+            distributionGuidelines: false, // Distribution guidelines
+            geometricGuideline: false, // Geometric guidelines
+            initPosAlignment: false, // Guideline to initial mouse position
+            centerToEdgeAlignment: false, // Center to edge alignment
+            resize: false, // Adjust node sizes to cell sizes
+            parentPadding: false, // Adjust parent sizes to cell sizes by padding
+            drawGrid: true, // Draw grid background
+        
+            // General
+            gridSpacing: 20, // Distance between the lines of the grid.
+            snapToGridCenter: true, // Snaps nodes to center of gridlines. When false, snaps to gridlines themselves. Note that either snapToGridOnRelease or snapToGridDuringDrag must be true.
+        
+            // Draw Grid
+            zoomDash: true, // Determines whether the size of the dashes should change when the drawing is zoomed in and out if grid is drawn.
+            panGrid: false, // Determines whether the grid should move then the user moves the graph if grid is drawn.
+            gridStackOrder: -1, // Namely z-index
+            gridColor: '#dedede', // Color of grid lines
+            lineWidth: 1.0, // Width of grid lines
+        
+            // Guidelines
+            guidelinesStackOrder: 4, // z-index of guidelines
+            guidelinesTolerance: 2.00, // Tolerance distance for rendered positions of nodes' interaction.
+            guidelinesStyle: { // Set ctx properties of line. Properties are here:
+                strokeStyle: "#8b7d6b", // color of geometric guidelines
+                geometricGuidelineRange: 400, // range of geometric guidelines
+                range: 100, // max range of distribution guidelines
+                minDistRange: 10, // min range for distribution guidelines
+                distGuidelineOffset: 10, // shift amount of distribution guidelines
+                horizontalDistColor: "#ff0000", // color of horizontal distribution alignment
+                verticalDistColor: "#00ff00", // color of vertical distribution alignment
+                initPosAlignmentColor: "#0000ff", // color of alignment to initial mouse location
+                lineDash: [0, 0], // line style of geometric guidelines
+                horizontalDistLine: [0, 0], // line style of horizontal distribution guidelines
+                verticalDistLine: [0, 0], // line style of vertical distribution guidelines
+                initPosAlignmentLine: [0, 0], // line style of alignment to initial mouse position
+            },
+        
+            // Parent Padding
+            parentSpacing: -1 // -1 to set paddings of parents to gridSpacing
+        };
+        
+        this.myCyRef.gridGuide(options); 
 
         /**
          * Add a check to see if there is a thesis. Useful for development: allows access
@@ -156,14 +220,15 @@ class ArgumentGraph extends Component {
 
             const id  = uuidv4()
             this.addNode({
-                creationMethod: 'dynamic',
+                creationMethod: 'static',
                 targetEleID: id,
                 edgeType: 'qualify',
                 argumentData: {
                     id: id,
                     type: 'thesis',
                     title: 'This is your thesis statement',
-                    content: 'Begin your analysis here'
+                    content: 'Begin your analysis here',
+                    targetArgument: id
                 }
             });
             return
@@ -256,12 +321,9 @@ class ArgumentGraph extends Component {
     updateStoreAndGetData = (nodeInitInfo) => {
 
         console.log('adding argument to store');
-        this.props.onDynamicAddNode(nodeInitInfo.argumentData)
-
-        console.log(nodeInitInfo.argumentData.type);
+        this.props.onDynamicAddNode(nodeInitInfo.argumentData); 
 
         let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type);
-
 
         for (let i = 0; i < targetArray.length; ++i) {
             const arg = targetArray[i];

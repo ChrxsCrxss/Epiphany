@@ -47,7 +47,7 @@ export const eleStyles = [
 
 export const cyStyle = {
     width: '100%',
-    height: '400px',
+    height: '800px',
     backgroundColor: 'yellow',
     borderWidth: '3px',
     boxShadow: '1px 1px 5px #555 inset'

@@ -1,15 +1,38 @@
 .Toolbar {
     height: 56px;
-    width: 100%; 
-    position: fixed; 
+    width: 100%;
+    position: fixed;
     top: 0;
-    left: 0; 
+    left: 0;
     background-color: steelblue;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px; 
+    padding: 0 20px;
     box-sizing: border-box;
     z-index: 90;
     background-color: grey;
+}
+
+.Header {
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.875rem;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    font-weight: 400;
+    line-height: 1.43;
+    letter-spacing: 0.01071em;
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    width: 100%;
+    display: flex;
+    z-index: 1100;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    flex-direction: column;
+    top: 0;
+    left: auto;
+    right: 0;
+    position: fixed;
+    color: #fff;
+    transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    background-color: #333;
 }
