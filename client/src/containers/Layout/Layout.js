@@ -65,9 +65,7 @@ class Layout extends Component {
                     /> */}
                 </main>
 
-
-                {/* <Footer /> */}
-
+                <Footer/>
             </Aux>
 
         )

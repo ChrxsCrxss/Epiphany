@@ -2,4 +2,10 @@
 .Footer {
     margin: auto; 
     bottom: 0;
+    height: 40px;
+    width: 100%;
+    position: fixed;
+    background-color: grey;
+    justify-content: center;
+    z-index: 20;
 }

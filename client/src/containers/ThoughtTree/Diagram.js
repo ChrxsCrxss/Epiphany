@@ -5,6 +5,8 @@ import Panel from "../../components/UI/Panel/Panel";
 import ArgumentGraph from './ArgumentGraph/ArgumentGraph';
 import axios from "axios";
 import withErrorHandler from '../../components/hoc/withErrorHandler'
+import Draggable, { DraggableCore } from 'react-draggable';
+
 
 const instance = axios.create();
 
@@ -87,7 +89,7 @@ class Diagram extends Component {
 
             <React.Fragment>
                 <Grid container direction="row">
-                    <Grid item sm={this.state.mapGridSize}>
+                    <Grid item sm={12}>
 
                         <Card>
                             <ArgumentGraph
@@ -98,7 +100,8 @@ class Diagram extends Component {
                     </Grid>
 
                     {this.state.showPanel ?
-                        <Grid item sm={this.state.panelGridSize}>
+                        <Draggable>
+                            <div>
                             <Panel
                                 title={"Panel"}
                                 content={this.state.panelContent}
@@ -107,7 +110,8 @@ class Diagram extends Component {
                                 onEditUpdate={this.state.updateNode}
                                 onDelete={this.state.deleteNode}
                             />
-                        </Grid>
+                            </div>
+                        </Draggable>
                         : null
                     }
 
