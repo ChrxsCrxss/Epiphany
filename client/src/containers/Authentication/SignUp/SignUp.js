@@ -1,4 +1,4 @@
-import Header from "../Header";
+import AuthButton from "../AuthButton";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import axios from 'axios'
@@ -41,13 +41,13 @@ export default class Signup extends Component {
     const { authenticated } = this.state;
     return (
       <div>
-        <Header
+        <AuthButton
           authenticated={authenticated}
           handleNotAuthenticated={this._handleNotAuthenticated}
         />
         <div>
           {!authenticated ? (
-            <h1>Welcome!</h1>
+            null
           ) : (
             <div>
               <h1>You have login succcessfully!</h1>

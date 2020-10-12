@@ -10,6 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import RemoveRedEyeTwoToneIcon from '@material-ui/icons/RemoveRedEyeTwoTone';
 import Paper from '@material-ui/core/Paper';
+import Auth from '../../../containers/Authentication/SignUp/SignUp'; 
 
 
 export default class toolbar extends Component {
@@ -37,7 +38,9 @@ export default class toolbar extends Component {
 
                         <RemoveRedEyeTwoToneIcon />
 
-                        <MenuRoundedIcon
+                        <Auth />
+
+                        {/* <MenuRoundedIcon
                             aria-controls="simple-menu"
                             aria-haspopup="true"
                             onClick={this.handleClick}
@@ -51,28 +54,13 @@ export default class toolbar extends Component {
                             open={Boolean(this.state.anchorElem)}
                             onClose={this.handleClose}
                         >
-                            {/* <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-    <MenuItem onClick={this.handleClose}>My account</MenuItem>
-    <MenuItem onClick={this.handleClose}>Logout</MenuItem> */}
-
                             <Link to="/"><MenuItem>Home</MenuItem></Link>
                             <Link to="/test"><MenuItem>Test</MenuItem></Link>
                             <Link to="/login"><MenuItem>Login</MenuItem></Link>
                             <Link to="/about"><MenuItem>About</MenuItem></Link>
                             <Link to="/thoughtTree"><MenuItem>ThoughtTree</MenuItem></Link>
-                        </Menu>
+                        </Menu> */}
 
-                        {/* 
-<IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-
-    <NavLink to="/test"> <MenuRoundedIcon /> </NavLink>
-
-</IconButton>
-<Typography variant="h6" className={classes.title}>
-    News
-</Typography>
-<Button color="inherit"><NavLink to="/">Home</NavLink></Button>
-<Button color="inherit"><NavLink to="/test">Test</NavLink></Button> */}
                     </Toolbar>
                 </Paper>
             </header>

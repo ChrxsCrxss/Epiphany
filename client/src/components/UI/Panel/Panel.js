@@ -153,6 +153,11 @@ class Panel extends Component {
                 <hr />
                 { content}
 
+                <hr />
+                <h4> Supporting documents </h4>
+                <div>
+                    Examples : images, thumbnails of vidoes (w/ links), audio
+                </div>
                 <div className={classes.Button}>
                     <Button
                         variant="contained"
