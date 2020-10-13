@@ -10,6 +10,9 @@ export default class Signup extends Component {
   };
 
   componentDidMount() {
+
+    console.log('SignUp mounted');
+    
     axios.get("http://localhost:5000/auth/login/success", {
       method: "GET",
       credentials: "include",
@@ -49,11 +52,11 @@ export default class Signup extends Component {
           {!authenticated ? (
             null
           ) : (
-            <div>
-              <h1>You have login succcessfully!</h1>
-              <h2>Welcome {this.state.user.name}!</h2>
-            </div>
-          )}
+              <div>
+                <h1>You have login succcessfully!</h1>
+                <h2>Welcome {this.state.user.name}!</h2>
+              </div>
+            )}
         </div>
       </div>
     );

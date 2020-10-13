@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import Button from '@material-ui/core/Button';
+import AuthModal from '../../components/UI/Modals/AuthModal/AuthModal'
+
 
 
 export default class AuthButton extends Component {
@@ -9,40 +11,47 @@ export default class AuthButton extends Component {
     authenticated: PropTypes.bool.isRequired
   };
 
-  handleSignInClick = () => {
-    // Authenticate using via passport api in the backend
-    // Open Google login page
-    window.open("http://localhost:5000/auth/google", "_self");
+  state = {
+    open : false
+  }
+
+  handleOpen = () => {
+    this.setState({ open : true });
   };
 
-  handleLogoutClick = () => {
-    // Logout using google passport api
-    // Set authenticated state to false in the HomePage component
-    window.open("http://localhost:5000/auth/logout", "_self");
-    this.props.handleNotAuthenticated();
+  handleClose = () => {
+    this.setState({ open : false });
   };
-
 
   render() {
 
     const { authenticated } = this.props;
 
     const AuthenticateButton =
-      authenticated ?
+      ! authenticated ? (
+        <React.Fragment>
+          <Button
+            size='small'
+            // onClick={this.handleLogoutClick}
+            onClick={this.handleOpen}
+          >Login
+          </Button>
+          <AuthModal 
+            open={this.state.open}
+            handleClose={this.handleClose}
+          />
+        </React.Fragment>
+      )
+        :
         <Button size='small'
           onClick={this.handleLogoutClick}
         >Logout</Button>
-        :
-        <Button size='small'
-          onClick={this.handleSignInClick}
-        >Logoin</Button>
 
 
     return (
       <div>
-            { AuthenticateButton }
+        {AuthenticateButton}
       </div>
     )
   }
-
 }
