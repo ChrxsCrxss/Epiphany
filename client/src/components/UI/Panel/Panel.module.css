@@ -2,13 +2,12 @@
     padding: 2%;
     padding-bottom: 4%;
     background-color: rgb(107, 206, 209); 
-    height: 600px;
-    width: 400px;
+    height: 500px;
+    width: 350px;
     z-index: 10;
     position: absolute; 
     right: 15px;
-    top: 50px;
-    opacity: 60%;
+    top: 150px;
     overflow: scroll;
 }
 
@@ -16,3 +15,23 @@
     padding: 0; 
     bottom: 0;
 }
+
+.EditBox {
+    background-color: inherit;
+    border-style: none;
+    outline-style: none;
+    width: 95%;
+    resize: none;
+    overflow: visible;
+}
+
+.Drag_Handle {
+    background: #ddd;
+    border: 1px solid #999;
+    border-radius: 3px;
+    display: block;
+    margin-bottom: 10px;
+    padding: 3px 5px;
+    text-align: center;
+    cursor: grab;
+  }

@@ -13,51 +13,6 @@ const findOrCreate = require("mongoose-findorcreate");
 // - - - - - - - - - - - Set up Express Server and Middleware - - - - - - - - - 
 const app = express();
 
-app.use(cors());
-
-// initalize passport middleware 
-app.use(passport.initialize());
-// deserialize cookie from the browser
-app.use(passport.session());
-
-
-// set up cors to allow us to accept requests from our client
-app.use(cors());
-
-app.use(
-    cookieSession({
-      name: "session",
-      keys: 'randomKey',
-      maxAge: 24 * 60 * 60 * 100
-    })
-  );
-
-// parse cookies
-app.use(cookieParser());
-
-// set up routes
-app.use("/auth", authRoutes);
-
-// - - - - - - - - - -  Connect to MongoDB and create Schema - - - - - - - - - -  
-// Connect to remote Mongo Atlas database
-mongoose.connect("mongodb+srv://ChrisCross:Crossmongo@cluster0.wwh6v.mongodb.net/impactHackDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-
-const userSchema = new mongoose.Schema({
-    name: String,
-    password: String,
-    googleId: String,
-});
-
-userSchema.plugin(findOrCreate);
-
-const User = mongoose.model('User', userSchema);
-
-
-
-
 // - - - - - - - - - -  Setup Google strategy using Passport API - - - - - - - - - -  
 
 // serialize the user.id to save in the cookie session
@@ -113,13 +68,74 @@ passport.use(new GoogleStrategy({
     })
 );
 
-const authCheck = (req, res, next) => {
-    next();
-};
-
-app.get("/", authCheck, (req, res) => {
-    res.status(200)
+// - - - - - - - - - -  Connect to MongoDB and create Schema - - - - - - - - - -  
+// Connect to remote Mongo Atlas database
+mongoose.connect("mongodb+srv://ChrisCross:Crossmongo@cluster0.wwh6v.mongodb.net/impactHackDB", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
+
+const userSchema = new mongoose.Schema({
+    name: String,
+    password: String,
+    googleId: String,
+});
+
+userSchema.plugin(findOrCreate);
+
+const User = mongoose.model('User', userSchema);
+
+// - - - - - - - - - -  Set up cookies - - - - - - - - - -  
+app.use(
+    cookieSession({
+      name: "session",
+      keys: 'randomKey',
+      maxAge: 24 * 60 * 60 * 100
+    })
+  );
+
+// parse cookies
+app.use(cookieParser());
+
+// initalize passport middleware 
+app.use(passport.initialize());
+// deserialize cookie from the browser
+app.use(passport.session());
+
+
+
+// set up cors to allow us to accept requests from our client
+app.use(cors({
+    origin: "http://localhost:3000", // allow to server to accept request from different origin
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true // allow session cookie from browser to pass through
+}));
+
+// set up routes
+app.use("/auth", authRoutes);
+
+const authCheck = (req, res, next) => {
+    if (!req.user) {
+      res.status(401).json({
+        authenticated: false,
+        message: "user has not been authenticated"
+      });
+    } else {
+      next();
+    }
+  };
+  
+  // if it's already login, send the profile response,
+  // otherwise, send a 401 response that the user is not authenticated
+  // authCheck before navigating to home page
+  app.get("/", authCheck, (req, res) => {
+    res.status(200).json({
+      authenticated: true,
+      message: "user successfully authenticated",
+      user: req.user,
+      cookies: req.cookies
+    });
+  });
 
 // connect react to nodejs express server
 const port = 5000;

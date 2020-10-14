@@ -6,6 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
+import Draggable, { DraggableCore } from 'react-draggable';
 import { connect } from 'react-redux';
 import * as actions from "../../../store/actions/index";
 
@@ -91,12 +92,12 @@ class Panel extends Component {
 
         const payload = {
             targetId: this.props.ele._private.data.id,
-            argumentType : this.props.ele._private.data.type
+            argumentType: this.props.ele._private.data.type
         }
 
         const response = await this.props.onDeleteHandler(payload);
 
-        this.props.onDelete( this.props.ele._private.data.id )
+        this.props.onDelete(this.props.ele._private.data.id)
 
     }
 
@@ -110,11 +111,13 @@ class Panel extends Component {
                     <h4>{this.props.ele._private.data.type}</h4>
                     <form>
                         <textarea
+                            className={classes.EditBox}
                             name='title'
                             value={this.state.updatedArgument.title}
                             onChange={(event) => this.onChangeHandler(event)}>
                         </textarea>
                         <textarea
+                            className={classes.EditBox}
                             name='content'
                             value={this.state.updatedArgument.content}
                             onChange={(event) => this.onChangeHandler(event)}>
@@ -131,45 +134,48 @@ class Panel extends Component {
                     </React.Fragment>
                 )
 
+
         return (
-            <Card className={classes.Panel}>
-                <IconButton
-                    aria-label="delete"
-                    onClick={this.toggleEditMode}>
-                    <EditIcon />
-                </IconButton>
-                <IconButton
-                    aria-label="delete"
-                    onClick={this.onSaveHandlerWrapper}>
-                    <ReplayIcon />
-                </IconButton>
-                <IconButton
-                    aria-label="delete"
-                    disabled={ this.props.ele._private.data.type === 'thesis'}
-                    onClick={this.onDeleteHanderWrapper}>
-                    <DeleteIcon />
-                </IconButton>
-
-                <hr />
-                { content}
-
-                <hr />
-                <h4> Supporting documents </h4>
-                <div>
-                    Examples : images, thumbnails of vidoes (w/ links), audio
-                </div>
-                <div className={classes.Button}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={this.props.close}
-                    >
-                        Close
+            <Draggable handle='#handle'>
+                <Card className={classes.Panel}>
+                    <strong id='handle' className={classes.Drag_Handle}><div>Drag here</div></strong>
+                    <div className={classes.Button}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            onClick={this.props.close}
+                        >
+                            Close
                 </Button>
-                </div>
+                    </div>
+                    <IconButton
+                        aria-label="delete"
+                        onClick={this.toggleEditMode}>
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton
+                        aria-label="delete"
+                        onClick={this.onSaveHandlerWrapper}>
+                        <ReplayIcon />
+                    </IconButton>
+                    <IconButton
+                        aria-label="delete"
+                        disabled={this.props.ele._private.data.type === 'thesis'}
+                        onClick={this.onDeleteHanderWrapper}>
+                        <DeleteIcon />
+                    </IconButton>
 
-            </Card>
+                    <hr />
+                    {content}
+
+                    <hr />
+                    <h4> Supporting documents </h4>
+                    <div>
+                        Examples : images, thumbnails of vidoes (w/ links), audio
+                </div>
+                </Card >
+            </Draggable>
         )
 
 

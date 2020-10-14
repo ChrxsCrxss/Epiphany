@@ -100,8 +100,6 @@ class Diagram extends Component {
                     </Grid>
 
                     {this.state.showPanel ?
-                        <Draggable>
-                            <div>
                             <Panel
                                 title={"Panel"}
                                 content={this.state.panelContent}
@@ -110,8 +108,6 @@ class Diagram extends Component {
                                 onEditUpdate={this.state.updateNode}
                                 onDelete={this.state.deleteNode}
                             />
-                            </div>
-                        </Draggable>
                         : null
                     }
 

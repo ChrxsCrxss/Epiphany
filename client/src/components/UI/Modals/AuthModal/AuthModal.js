@@ -14,9 +14,6 @@ const AuthModal = (props) => {
         // Authenticate using via passport api in the backend
         // Open Google login page
 
-        let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,
-        width=600,height=300,left=100,top=100`;
-
         window.open("http://localhost:5000/auth/google", "_self");
     };
 
