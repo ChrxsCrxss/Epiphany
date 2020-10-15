@@ -37,7 +37,8 @@ const ctxMenuCmdsConfig = (callbacks) => {
                     type: 'pro_arguments',
                     title: 'new node title',
                     content: 'new node content',
-                    degree: ele._private.data.degree + 1
+                    degree: ele._private.data.degree + 1,
+                    targetArgument: ele._private.data.id
                 }
             });
         },
@@ -62,7 +63,8 @@ const ctxMenuCmdsConfig = (callbacks) => {
                     type: 'con_arguments',
                     title: 'new node title',
                     content: 'new node content',
-                    degree: ele._private.data.degree + 1
+                    degree: ele._private.data.degree + 1,
+                    targetArgument: ele._private.data.id
                 }
             });
         },

@@ -1,4 +1,5 @@
 import * as actionTypes from "../actions/actionTypes";
+import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {
     /**
@@ -7,7 +8,7 @@ const initialState = {
      * component. Each element inside each inne array is an 
      * argument 
      */
-    argumentDiagrams : [],
+    argumentDiagrams : {},
     cyCoreRef : null
 }
 
@@ -37,11 +38,15 @@ const graphReducer = (state = initialState, action) => {
     if (action.type === actionTypes.SAVE_DIAGRAM) {
 
         console.log('called SAVE_DIAGRAM');
+        
 
         console.log(action); 
         return {
             ...state,
-            argumentDiagrams : state.argumentDiagrams.concat(action.payload)
+            argumentDiagrams : {
+                ...state.argumentDiagrams,
+                [uuidv4()] : action.payload 
+            }
         }
     }
 

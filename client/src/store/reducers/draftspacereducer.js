@@ -4,6 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 const initialState = {
 
     /**
+     * We need an id to so that we can save and retrieve diagrams
+     */
+    id: null ,
+
+    /**
      * The thesis is not *really* an array: it can only hold one 
      * thesis object. This is enforced in the reducer by always checking
      * if the argument type is 'thesis' and then popping the array. 
@@ -73,7 +78,7 @@ const draftSpaceReducer = (state = initialState, action) => {
                     ...state,
                     [action.payload.type]: state[action.payload.type].concat({
                         ...action.payload,
-                        targetArgument: action.payload.targetArgument || null
+                        targetArgument: action.payload.targetArgument 
                     }),
                 }
             );
