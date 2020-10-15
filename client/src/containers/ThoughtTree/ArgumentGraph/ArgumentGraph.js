@@ -479,7 +479,6 @@ const mapDispatchToProps = dispatch => {
     return {
         onDynamicAddNode: (payload) => dispatch(actions.addArgument(payload)),
         onSetTargetArgument: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument)),
-        onSetCyCoreRef: (cyCoreRef) => dispatch(actions.setCyCoreRef(cyCoreRef))
     };
 }
 

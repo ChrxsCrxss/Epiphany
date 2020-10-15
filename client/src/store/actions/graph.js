@@ -1,8 +1,8 @@
 import * as actionTypes from './actionTypes';
 
-export const setCyCoreRef = ( cyCoreRef ) => {
+export const saveDiagram = ( payload ) => {
     return {
-        type : actionTypes.SET_CY_CORE_REF,
-        cyCoreRef : cyCoreRef
+        type : actionTypes.SAVE_DIAGRAM,
+        payload : payload
     }; 
 };

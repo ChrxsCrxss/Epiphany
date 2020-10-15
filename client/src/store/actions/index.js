@@ -5,5 +5,5 @@ export {
 } from './arguments'
 
 export {
-    setCyCoreRef 
+    saveDiagram
 } from './graph'

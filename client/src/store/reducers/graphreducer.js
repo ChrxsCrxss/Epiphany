@@ -1,27 +1,47 @@
 import * as actionTypes from "../actions/actionTypes";
 
 const initialState = {
-    ideaTress : [],
+    /**
+     * An array of object arrays. Each inner array represents 
+     * an argument diagram that can be render via the Cytoscape
+     * component. Each element inside each inne array is an 
+     * argument 
+     */
+    argumentDiagrams : [],
     cyCoreRef : null
 }
+
+// argumentDiagrams : [ 
+//     {
+//         thesis : [{}],
+//         pro_arguments: [{}],
+//         con_arguments: [{}],
+//         qual_arguments: [{}],
+//     },
+//     ...
+// ]
+
+
+
+
 
 const graphReducer = (state = initialState, action) => {
 
     if (action.type === 'PUSH') {
         return {
             state,
-            ideaTrees : state.ideaTress.concat(action.payload)
+            argumentDiagrams : state.argumentDiagrams.concat(action.payload)
         }
     }
 
-    if (action.type === actionTypes.SET_CY_CORE_REF) {
+    if (action.type === actionTypes.SAVE_DIAGRAM) {
 
-        console.log('called SET_CY_CORE_REF');
+        console.log('called SAVE_DIAGRAM');
 
         console.log(action); 
         return {
             ...state,
-            cyCoreRef : action.cyCoreRef
+            argumentDiagrams : state.argumentDiagrams.concat(action.payload)
         }
     }
 

@@ -9,7 +9,7 @@ import RemoveRedEyeTwoToneIcon from '@material-ui/icons/RemoveRedEyeTwoTone';
 import Paper from '@material-ui/core/Paper';
 import Auth from '../../../containers/Authentication/SignUp/SignUp'; 
 import { connect } from 'react-redux'; 
-
+import * as actions from '../../../store/actions/index';
 
 class Nav extends Component {
 
@@ -26,6 +26,21 @@ class Nav extends Component {
         this.setState({ anchorElem: null });
     }
 
+    onSaveDiagramWrapper = () => {
+        
+        /**
+         * We want to save the diagram data as a flatten array
+         */
+        const diagramData = []
+        .concat( this.props.thesis.map( thesis => ({...thesis}) ) )
+        .concat( this.props.pro_arguments.map( pro_arg => ({...pro_arg}) ) )
+        .concat( this.props.con_arguments.map( con_arg => ({...con_arg}) ) )
+        .concat( this.props.qual_arguments.map( qual_arg => ({...qual_arg}) ) ); 
+
+        this.props.onSaveDiagram(diagramData); 
+
+
+    }
 
 
     render() {
@@ -38,8 +53,10 @@ class Nav extends Component {
 
                         <Auth />
 
-                        <button onClick={() => this.props.cyCoreRef.center() }>
-                            Center
+                        <button 
+                        onClick={this.onSaveDiagramWrapper}
+                         >
+                            Save
                         </button>
 
                         <MenuRoundedIcon
@@ -73,12 +90,22 @@ class Nav extends Component {
 }
 
 
+const mapDispatchToProps = dispatch => {
+    return {
+        onSaveDiagram: (payload) => dispatch(actions.saveDiagram(payload))
+    };
+}
+
 const mapStateToProps = state => {
     return {
-        cyCoreRef : state.graphReducer.cyCoreRef
+        pro_arguments: state.draftSpaceReducer.pro_arguments,
+        con_arguments: state.draftSpaceReducer.con_arguments,
+        qual_arguments: state.draftSpaceReducer.qual_arguments,
+        thesis: state.draftSpaceReducer.thesis,
+        isAuthenticated: state.draftSpaceReducer.isAuthenticated
     };
 };
 
 // If you want to use mapDispatchToProps without a 
 // mapStateToProps just use null for the first argument.
-export default connect(mapStateToProps)(Nav); 
+export default connect(mapStateToProps, mapDispatchToProps)(Nav); 

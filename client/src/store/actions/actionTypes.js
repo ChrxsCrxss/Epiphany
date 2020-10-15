@@ -9,4 +9,4 @@ export const CHANGE_ARGUMENT_TYPE = 'CHANGE_ARGUMENT_TYPE';
 
 export const UPDATE_ARGUMENT = 'UPDATE_ARGUMENT'; 
 
-export const SET_CY_CORE_REF = ' SET_CY_CORE_REF';
+export const SAVE_DIAGRAM = 'SAVE_DIAGRAM';
