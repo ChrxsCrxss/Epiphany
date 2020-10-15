@@ -2,9 +2,7 @@ import * as actionTypes from "../actions/actionTypes";
 import { v4 as uuidv4 } from 'uuid';
 
 const initialState = {
-    selectedArgumentType: null,
-    title: '',
-    content: '',
+
     /**
      * The thesis is not *really* an array: it can only hold one 
      * thesis object. This is enforced in the reducer by always checking
@@ -13,7 +11,14 @@ const initialState = {
      * We use a thesis to simplify state management and to provide 
      * extensibility
      */
-    thesis: [],
+    thesis: [{
+        id: uuidv4(),
+        type: 'thesis',
+        title: 'This is your thesis',
+        content: 'Try to summarize your main point in a few sentences',
+        degree: 0,
+        targetArgument: null
+    }],
     pro_arguments: [],
     con_arguments: [],
     qual_arguments: [],
@@ -36,14 +41,6 @@ const draftSpaceReducer = (state = initialState, action) => {
 
             console.log(action.updatedArgumentType);
 
-            // To update the thesis while allowing only one thesis, we pop
-            // the old thesis, then add an object with the id passed in 
-            // the action, so the map function will contain the target id
-            if (state.selectedArgumentType === 'thesis') {
-                state.thesis.pop();
-                state.push({ id: action.targetArgumentId })
-            }
-
             return (
                 {
                     ...state,
@@ -56,9 +53,13 @@ const draftSpaceReducer = (state = initialState, action) => {
                         }
 
                         // If the argument object's id does match the target id,
-                        // replace the entire object with the new updatedArgument 
+                        // replace the entire object with the new updatedArgument,
+                        // while keeping the old values for the degree and 
+                        // targetArgument keys
                         return {
-                            ...action.updatedArgument
+                            ...action.updatedArgument,
+                            degree : argument.degree,
+                            targetArgument : argument.targetArgument
                         }
                     })
                 }
@@ -67,10 +68,6 @@ const draftSpaceReducer = (state = initialState, action) => {
             break;
         case actionTypes.ADD_ARGUMENT:
 
-            if (action.payload.type === 'thesis' || state.thesis.length !== 0) {
-                state.thesis.pop();
-            }
-
             return (
                 {
                     ...state,
@@ -78,8 +75,6 @@ const draftSpaceReducer = (state = initialState, action) => {
                         ...action.payload,
                         targetArgument: action.payload.targetArgument || null
                     }),
-                    title: '',
-                    content: '',
                 }
             );
             break;

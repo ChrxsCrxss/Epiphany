@@ -129,7 +129,7 @@ class Panel extends Component {
                 : (
                     <React.Fragment>
                         <h4>{this.props.ele._private.data.type}</h4>
-                        <h4>{this.props.ele._private.data.title}</h4>
+                        <p>{this.props.ele._private.data.title}</p>
                         <p>{this.props.ele._private.data.content}</p>
                     </React.Fragment>
                 )

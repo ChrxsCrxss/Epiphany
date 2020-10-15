@@ -17,12 +17,12 @@
 }
 
 .EditBox {
-    background-color: inherit;
+    background-color: white;
     border-style: none;
     outline-style: none;
     width: 95%;
     resize: none;
-    overflow: visible;
+    overflow: auto;
 }
 
 .Drag_Handle {

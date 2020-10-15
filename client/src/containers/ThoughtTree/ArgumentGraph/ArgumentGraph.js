@@ -11,14 +11,12 @@ import graphLayoutOptions from "../CytoscapeConfig/graphLayoutOptions";
 import * as actions from '../../../store/actions/index';
 import ctxMenuCmdsConfig from "../CytoscapeConfig/ctxMenuCmdsConfig";
 import assert from 'assert';
+import classes from './ArgumentGraph.module.css';
 
-import navigator from 'cytoscape-navigator'; 
-import gridGuide from 'cytoscape-grid-guide'; 
+import gridGuide from 'cytoscape-grid-guide';
 
 cytoscape.use(cxtmenu);
 
-gridGuide( cytoscape );
-navigator( cytoscape );
 
 
 class ArgumentGraph extends Component {
@@ -52,82 +50,13 @@ class ArgumentGraph extends Component {
 
         this.setState({ cyCoreListeners: this.myCyRef._private.emitter.listeners });
 
-        this.myCyRef.navigator({
-            container: true // html dom element
-          , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
-          , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
-          , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
-          , dblClickDelay: 200 // milliseconds
-          , removeCustomContainer: true // destroy the container specified by user on plugin destroy
-          , rerenderDelay: 100 // ms to throttle rerender updates to the panzoom for performance
-        }); 
-
-        const options = {
-            // On/Off Modules
-            /* From the following four snap options, at most one should be true at a given time */
-            snapToGridOnRelease: true, // Snap to grid on release
-            snapToGridDuringDrag: false, // Snap to grid during drag
-            snapToAlignmentLocationOnRelease: false, // Snap to alignment location on release
-            snapToAlignmentLocationDuringDrag: false, // Snap to alignment location during drag
-            distributionGuidelines: false, // Distribution guidelines
-            geometricGuideline: false, // Geometric guidelines
-            initPosAlignment: false, // Guideline to initial mouse position
-            centerToEdgeAlignment: false, // Center to edge alignment
-            resize: false, // Adjust node sizes to cell sizes
-            parentPadding: false, // Adjust parent sizes to cell sizes by padding
-            drawGrid: true, // Draw grid background
-        
-            // General
-            gridSpacing: 20, // Distance between the lines of the grid.
-            snapToGridCenter: true, // Snaps nodes to center of gridlines. When false, snaps to gridlines themselves. Note that either snapToGridOnRelease or snapToGridDuringDrag must be true.
-        
-            // Draw Grid
-            zoomDash: true, // Determines whether the size of the dashes should change when the drawing is zoomed in and out if grid is drawn.
-            panGrid: false, // Determines whether the grid should move then the user moves the graph if grid is drawn.
-            gridStackOrder: -1, // Namely z-index
-            gridColor: '#dedede', // Color of grid lines
-            lineWidth: 1.0, // Width of grid lines
-        
-            // Guidelines
-            guidelinesStackOrder: 4, // z-index of guidelines
-            guidelinesTolerance: 2.00, // Tolerance distance for rendered positions of nodes' interaction.
-            guidelinesStyle: { // Set ctx properties of line. Properties are here:
-                strokeStyle: "#8b7d6b", // color of geometric guidelines
-                geometricGuidelineRange: 400, // range of geometric guidelines
-                range: 100, // max range of distribution guidelines
-                minDistRange: 10, // min range for distribution guidelines
-                distGuidelineOffset: 10, // shift amount of distribution guidelines
-                horizontalDistColor: "#ff0000", // color of horizontal distribution alignment
-                verticalDistColor: "#00ff00", // color of vertical distribution alignment
-                initPosAlignmentColor: "#0000ff", // color of alignment to initial mouse location
-                lineDash: [0, 0], // line style of geometric guidelines
-                horizontalDistLine: [0, 0], // line style of horizontal distribution guidelines
-                verticalDistLine: [0, 0], // line style of vertical distribution guidelines
-                initPosAlignmentLine: [0, 0], // line style of alignment to initial mouse position
-            },
-        
-            // Parent Padding
-            parentSpacing: -1 // -1 to set paddings of parents to gridSpacing
-        };
-        
-        this.myCyRef.gridGuide(options); 
-
-        /**
-         * Add a check to see if there is a thesis. Useful for development: allows access
-         * of the page without adding a thesis 
-         */
-        let initThesisID = 'null thesis id value';
-        if (this.props.thesis[0]) {
-            initThesisID = this.props.thesis[0].id;
-        }
-
         /**
          * We load the nodes in the callback because all original arguments either
          * support, oppose, or qualify the thesis. Since the id of the thesis is used
          * as the id of the target node, currentThesisNodeID must be set before the 
          * nodes can be loaded.
          */
-        this.setState({ currentThesisNodeID: initThesisID }, () => this.loadNodes());
+        this.setState({ currentThesisNodeID: this.props.thesis[0].id }, () => this.loadNodes());
 
         this.runLayout();
 
@@ -172,14 +101,22 @@ class ArgumentGraph extends Component {
 
         this.myCyRef.cxtmenu(this.state.ctxMenuConfiguration);
 
-
+        /**
+         * UX : a gentle panel the the node the user clicked on
+         */
         this.myCyRef.on('tap', 'node', (event) => {
 
             const elem = this.myCyRef.$id(event.target.id());
 
             console.log(elem._private.data.text);
 
-            this.myCyRef.center(elem);
+            this.myCyRef.animate({
+                center : {
+                    eles : elem 
+                }
+              }, {
+                duration: 500
+              });
 
             // this.nodeClickedHandler(elem._private.data.text, elem.id());
 
@@ -218,7 +155,7 @@ class ArgumentGraph extends Component {
 
         if (staticArguments.length === 0) {
 
-            const id  = uuidv4()
+            const id = uuidv4()
             this.addNode({
                 creationMethod: 'static',
                 targetEleID: id,
@@ -321,7 +258,7 @@ class ArgumentGraph extends Component {
     updateStoreAndGetData = (nodeInitInfo) => {
 
         console.log('adding argument to store');
-        this.props.onDynamicAddNode(nodeInitInfo.argumentData); 
+        this.props.onDynamicAddNode(nodeInitInfo.argumentData);
 
         let targetArray = this.getArgumentArrayByType(nodeInitInfo.argumentData.type);
 
@@ -510,24 +447,30 @@ class ArgumentGraph extends Component {
 
     render() {
         return (
-            <CytoscapeComponent
-                style={cyStyles.cyStyle}
-                stylesheet={cyStyles.eleStyles}
+            <React.Fragment>
+                <CytoscapeComponent
+                    style={cyStyles.cyStyle}
+                    stylesheet={cyStyles.eleStyles}
+                    minZoom={0.5}
+                    maxZoom={2}
 
-                // The default action of the cytoscape package seems to be to place two
-                // nodes in the graph if no application data is provided. This call to
-                // normalizeElements prevents that action. 
-                elements={CytoscapeComponent.normalizeElements({ nodes: [], edges: [] })}
+                    // The default action of the cytoscape package seems to be to place two
+                    // nodes in the graph if no application data is provided. This call to
+                    // normalizeElements prevents that action. 
+                    elements={CytoscapeComponent.normalizeElements({ nodes: [], edges: [] })}
 
-                // use extensions by accessing the core object using the cy prop 
-                cy={cy => {
+                    // use extensions by accessing the core object using the cy prop 
+                    cy={cy => {
 
-                    this.myCyRef = cy;
-                    // Pan the graph to the centre of a collection. If no collection is 
-                    // specified, then the graph is centred on all nodes and edges in the graph.
-                    cy.centre( /* Center of graph */);
-                }}
-            />
+                        this.myCyRef = cy;
+                        
+                        // Pan the graph to the centre of a collection. If no collection is 
+                        // specified, then the graph is centred on all nodes and edges in the graph.
+                        // cy.centre( /* Center of graph */);
+                    }}
+                />
+                <div id='cytoscape_nav_container' />
+            </React.Fragment>
         )
     }
 }
@@ -536,16 +479,17 @@ const mapDispatchToProps = dispatch => {
     return {
         onDynamicAddNode: (payload) => dispatch(actions.addArgument(payload)),
         onSetTargetArgument: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument)),
+        onSetCyCoreRef: (cyCoreRef) => dispatch(actions.setCyCoreRef(cyCoreRef))
     };
 }
 
 const mapStateToProps = state => {
     return {
-        pro_arguments: state.pro_arguments,
-        con_arguments: state.con_arguments,
-        qual_arguments: state.qual_arguments,
-        thesis: state.thesis,
-        isAuthenticated: state.isAuthenticated
+        pro_arguments: state.draftSpaceReducer.pro_arguments,
+        con_arguments: state.draftSpaceReducer.con_arguments,
+        qual_arguments: state.draftSpaceReducer.qual_arguments,
+        thesis: state.draftSpaceReducer.thesis,
+        isAuthenticated: state.draftSpaceReducer.isAuthenticated
     };
 };
 
