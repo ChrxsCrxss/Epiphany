@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import Card from '@material-ui/core/Card';
 import classes from './Panel.module.css';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -138,17 +138,14 @@ class Panel extends Component {
         return (
             <Draggable handle='#handle'>
                 <Card className={classes.Panel}>
-                    <strong id='handle' className={classes.Drag_Handle}><div>Drag here</div></strong>
-                    <div className={classes.Button}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            size="small"
-                            onClick={this.props.close}
-                        >
-                            Close
-                </Button>
-                    </div>
+                    <strong id='handle' className={classes.Drag_Handle}>
+                    <CloseRoundedIcon
+                        className={classes.CloseButton}
+                        onClick={this.props.close}
+                        color='secondary'
+                        size="small"
+                    />
+                    </strong>
                     <IconButton
                         aria-label="delete"
                         onClick={this.toggleEditMode}>

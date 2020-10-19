@@ -12,10 +12,12 @@ import * as actions from '../../../store/actions/index';
 import ctxMenuCmdsConfig from "../CytoscapeConfig/ctxMenuCmdsConfig";
 import assert from 'assert';
 import classes from './ArgumentGraph.module.css';
+import dblclick from 'cytoscape-dblclick';
 
 import gridGuide from 'cytoscape-grid-guide';
 
 cytoscape.use(cxtmenu);
+cytoscape.use(dblclick); 
 
 
 
@@ -99,10 +101,49 @@ class ArgumentGraph extends Component {
         this.myCyRef._private.emitter.listeners = [];
         this.myCyRef._private.emitter.listeners = [...this.state.cyCoreListeners];
 
+        
+        /**
+         * Probably need to move all the callback initializations to another function:
+         * 
+         * add dblclickcallback
+         * add tapcallback 
+         * add mouseovercallback
+         */
+        this.myCyRef.dblclick(300);
+
         this.myCyRef.cxtmenu(this.state.ctxMenuConfiguration);
 
+        this.myCyRef.on('dblclick', 'node', (event) => {
+            const elem = this.myCyRef.$id(event.target.id());
+
+            console.log(elem._private.data.text);
+
+            this.myCyRef.animate({
+                center : {
+                    eles : elem 
+                }
+              }, {
+                duration: 200
+              });
+
+              window.clearTimeout(timeoutID);
+              
+              this.props.nodeClickedHandler(elem._private.data.text, elem);
+        })
+
         /**
-         * UX : a gentle panel the the node the user clicked on
+         * This important variable 
+         */
+        let timeoutID; 
+
+        /**
+         * Clear the timeout ID on mousedown to prevent interrupting user while 
+         * manually manipulating node positions or using circular popup menu 
+         */
+        this.myCyRef.on('mousedown', 'node', () => window.clearTimeout(timeoutID) )
+
+        /**
+         * UX : a gentle pan to the node the user clicked on
          */
         this.myCyRef.on('tap', 'node', (event) => {
 
@@ -118,10 +159,61 @@ class ArgumentGraph extends Component {
                 duration: 500
               });
 
+              window.clearTimeout(timeoutID);
+
             // this.nodeClickedHandler(elem._private.data.text, elem.id());
 
         });
 
+        this.myCyRef.on('mouseover', 'node', (event) => {
+
+            const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
+    
+            this.myCyRef.$(`#${eleID}`).css({ 
+                width: 150,
+                height: 150,
+            });
+            
+            timeoutID = setTimeout(() => {
+                alert('hovering over node!');
+            }, 1500);
+            
+        });
+
+        this.myCyRef.on('mouseover', 'edge', (event) => {
+
+            const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
+    
+            this.myCyRef.$(`#${eleID}`).css({ 
+                width: 10,
+                height: 10,
+            });
+            
+        });
+
+        this.myCyRef.on('mouseout', 'edge', (event) => {
+
+            const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
+    
+            this.myCyRef.$(`#${eleID}`).css({ 
+                width: 5,
+                height: 5,
+            });
+            
+        });
+
+        this.myCyRef.on('mouseout', 'node', (event) => {
+
+            window.clearTimeout(timeoutID);
+
+            const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
+    
+            this.myCyRef.$(`#${eleID}`).css({ 
+                width: 120,
+                height: 120,
+            });
+            
+        });
 
         console.log(this.myCyRef);
 

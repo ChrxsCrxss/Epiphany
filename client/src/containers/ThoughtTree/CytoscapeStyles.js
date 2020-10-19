@@ -17,18 +17,27 @@ export const eleStyles = [
             width: 120,
             height: 120,
             shape: 'round-hexagon',
-            backgroundColor: 'white',
+            backgroundColor: 'grey',
             borderWidth: 3,
+            backgroundFit: 'cover',
+            backgroundImage: 'text.png',
 
             'text-wrap': 'wrap',
-            "text-max-width": 80,
+            "text-max-width": 150,
 
             "border-color": "blue",
             'label': 'data(label)',
             'text-halign': "center",
-            'text-valign': 'center',
+            'text-valign': 'bottom',
             "text-border-color": 'blue',
-            "text-border-width": 3
+            "text-border-width": 3,
+            "text-margin-y": 10,
+            "text-transform": "uppercase",
+            "text-background-color": "white",
+            "text-background-padding": 5,
+            "text-background-shape": "round-rectangle",
+            "text-background-opacity": 0.75,
+            "text-events": "yes"
 
         }
     },
@@ -37,10 +46,12 @@ export const eleStyles = [
         selector: 'edge',
         style: {
             width: 5,
-            "curve-style": 'straight',
+            "curve-style": 'unbundled-bezier',
             "target-arrow-shape": 'circle',
             "mid-target-arrow-shape": 'triangle',
-            'line-color': 'blue'
+            'line-color': 'blue',
+            'source-endpoint': 'outside-to-line-or-label',
+            'target-endpoint': 'outside-to-line-or-label'
         }
     },
 ]
@@ -50,7 +61,6 @@ export const cyStyle = {
     height: '800px',
     backgroundColor: 'yellow',
     borderWidth: '3px',
-    boxShadow: '1px 1px 5px #555 inset'
 }
 
  

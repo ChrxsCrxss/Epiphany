@@ -5,7 +5,7 @@ import Panel from "../../components/UI/Panel/Panel";
 import ArgumentGraph from './ArgumentGraph/ArgumentGraph';
 import axios from "axios";
 import withErrorHandler from '../../components/hoc/withErrorHandler'
-import Draggable, { DraggableCore } from 'react-draggable';
+import { motion } from "framer-motion"
 
 
 const instance = axios.create();
@@ -100,6 +100,10 @@ class Diagram extends Component {
                     </Grid>
 
                     {this.state.showPanel ?
+                        <motion.div
+                            initial={{ x: 500}}
+                            animate={{ x: 0 }}
+                        >
                             <Panel
                                 title={"Panel"}
                                 content={this.state.panelContent}
@@ -108,6 +112,7 @@ class Diagram extends Component {
                                 onEditUpdate={this.state.updateNode}
                                 onDelete={this.state.deleteNode}
                             />
+                        </motion.div>
                         : null
                     }
 
