@@ -13,11 +13,12 @@ import ctxMenuCmdsConfig from "../CytoscapeConfig/ctxMenuCmdsConfig";
 import assert from 'assert';
 import classes from './ArgumentGraph.module.css';
 import dblclick from 'cytoscape-dblclick';
+import videoModal from '../../../components/UI/Modals/VideoModal/VideoModal';
 
 import gridGuide from 'cytoscape-grid-guide';
 
 cytoscape.use(cxtmenu);
-cytoscape.use(dblclick); 
+cytoscape.use(dblclick);
 
 
 
@@ -27,6 +28,7 @@ class ArgumentGraph extends Component {
     state = {
         currentThesisNodeID: null,
         ctxMenuConfiguration: null,
+        showModal: false,
         cyCoreListeners: []
     }
 
@@ -60,7 +62,7 @@ class ArgumentGraph extends Component {
          */
         this.setState({ currentThesisNodeID: this.props.thesis[0].id }, () => this.loadNodes());
 
-        this.runLayout();
+        this.runLayout({ ...graphLayoutOptions, fit: false, animate: false });
 
         /**
          * Finally, pass callbacks up to parent. This will eventually be
@@ -101,7 +103,7 @@ class ArgumentGraph extends Component {
         this.myCyRef._private.emitter.listeners = [];
         this.myCyRef._private.emitter.listeners = [...this.state.cyCoreListeners];
 
-        
+
         /**
          * Probably need to move all the callback initializations to another function:
          * 
@@ -114,33 +116,34 @@ class ArgumentGraph extends Component {
         this.myCyRef.cxtmenu(this.state.ctxMenuConfiguration);
 
         this.myCyRef.on('dblclick', 'node', (event) => {
+
             const elem = this.myCyRef.$id(event.target.id());
 
             console.log(elem._private.data.text);
 
             this.myCyRef.animate({
-                center : {
-                    eles : elem 
+                center: {
+                    eles: elem
                 }
-              }, {
-                duration: 200
-              });
+            }, {
+                duration: 500
+            });
 
-              window.clearTimeout(timeoutID);
-              
-              this.props.nodeClickedHandler(elem._private.data.text, elem);
+            window.clearTimeout(timeoutID);
+
+            this.props.nodeClickedHandler(elem._private.data.text, elem);
         })
 
         /**
          * This important variable 
          */
-        let timeoutID; 
+        let timeoutID;
 
         /**
          * Clear the timeout ID on mousedown to prevent interrupting user while 
          * manually manipulating node positions or using circular popup menu 
          */
-        this.myCyRef.on('mousedown', 'node', () => window.clearTimeout(timeoutID) )
+        this.myCyRef.on('mousedown', 'node', () => window.clearTimeout(timeoutID))
 
         /**
          * UX : a gentle pan to the node the user clicked on
@@ -149,17 +152,17 @@ class ArgumentGraph extends Component {
 
             const elem = this.myCyRef.$id(event.target.id());
 
-            console.log(elem._private.data.text);
+            console.log(elem._private.data.content);
 
             this.myCyRef.animate({
-                center : {
-                    eles : elem 
+                center: {
+                    eles: elem
                 }
-              }, {
+            }, {
                 duration: 500
-              });
+            });
 
-              window.clearTimeout(timeoutID);
+            window.clearTimeout(timeoutID);
 
             // this.nodeClickedHandler(elem._private.data.text, elem.id());
 
@@ -168,38 +171,38 @@ class ArgumentGraph extends Component {
         this.myCyRef.on('mouseover', 'node', (event) => {
 
             const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
-    
-            this.myCyRef.$(`#${eleID}`).css({ 
+
+            this.myCyRef.$(`#${eleID}`).css({
                 width: 150,
                 height: 150,
             });
-            
+
             timeoutID = setTimeout(() => {
-                alert('hovering over node!');
+                this.setState({ showModal: true })
             }, 1500);
-            
+
         });
 
         this.myCyRef.on('mouseover', 'edge', (event) => {
 
             const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
-    
-            this.myCyRef.$(`#${eleID}`).css({ 
+
+            this.myCyRef.$(`#${eleID}`).css({
                 width: 10,
                 height: 10,
             });
-            
+
         });
 
         this.myCyRef.on('mouseout', 'edge', (event) => {
 
             const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
-    
-            this.myCyRef.$(`#${eleID}`).css({ 
+
+            this.myCyRef.$(`#${eleID}`).css({
                 width: 5,
                 height: 5,
             });
-            
+
         });
 
         this.myCyRef.on('mouseout', 'node', (event) => {
@@ -207,12 +210,12 @@ class ArgumentGraph extends Component {
             window.clearTimeout(timeoutID);
 
             const eleID = this.myCyRef.$id(event.target.id())._private.data.id;
-    
-            this.myCyRef.$(`#${eleID}`).css({ 
+
+            this.myCyRef.$(`#${eleID}`).css({
                 width: 120,
                 height: 120,
             });
-            
+
         });
 
         console.log(this.myCyRef);
@@ -505,8 +508,9 @@ class ArgumentGraph extends Component {
             });
         }
 
-
-        this.runLayout();
+        // Could probably replace with the animateFilter 
+        const isNewGraph = nodeInitInfo.argumentData.type === 'thesis' ? true : false;
+        this.runLayout({ ...graphLayoutOptions, animate: !isNewGraph });
     }
 
 
@@ -516,10 +520,20 @@ class ArgumentGraph extends Component {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    runLayout = () => {
+    runLayout = (graphLayoutOptions) => {
         // create new layout
         let layout = this.myCyRef.$().layout(graphLayoutOptions);
         layout.run();
+
+        let timeoutID;
+        timeoutID = setTimeout(() => {
+            this.myCyRef.animate({
+                center: {}
+            }, {
+                duration: 500
+            });
+        }, 1100);
+
     }
 
     tagThesis = (ele) => {
@@ -538,8 +552,15 @@ class ArgumentGraph extends Component {
     }
 
     render() {
+
         return (
             <React.Fragment>
+
+                <videoModal
+                    show={true}
+                    clicked={() => this.setState({ showModal: false })}
+                />
+
                 <CytoscapeComponent
                     style={cyStyles.cyStyle}
                     stylesheet={cyStyles.eleStyles}
@@ -555,7 +576,7 @@ class ArgumentGraph extends Component {
                     cy={cy => {
 
                         this.myCyRef = cy;
-                        
+
                         // Pan the graph to the centre of a collection. If no collection is 
                         // specified, then the graph is centred on all nodes and edges in the graph.
                         // cy.centre( /* Center of graph */);

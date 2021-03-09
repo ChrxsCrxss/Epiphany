@@ -23,7 +23,7 @@ export const eleStyles = [
             backgroundImage: 'text.png',
 
             'text-wrap': 'wrap',
-            "text-max-width": 150,
+            "text-max-width": 300,
 
             "border-color": "blue",
             'label': 'data(label)',
@@ -33,10 +33,9 @@ export const eleStyles = [
             "text-border-width": 3,
             "text-margin-y": 10,
             "text-transform": "uppercase",
-            "text-background-color": "white",
-            "text-background-padding": 5,
-            "text-background-shape": "round-rectangle",
-            "text-background-opacity": 0.75,
+            "text-outline-color" : "white",
+            "text-outline-width" : 10,
+            "text-outline-opacity" : 0.6,
             "text-events": "yes"
 
         }
@@ -50,8 +49,8 @@ export const eleStyles = [
             "target-arrow-shape": 'circle',
             "mid-target-arrow-shape": 'triangle',
             'line-color': 'blue',
-            'source-endpoint': 'outside-to-line-or-label',
-            'target-endpoint': 'outside-to-line-or-label'
+            'source-endpoint': 'outside-to-node-or-label',
+            'target-endpoint': 'outside-to-node-or-label'
         }
     },
 ]

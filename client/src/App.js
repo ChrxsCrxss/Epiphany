@@ -4,8 +4,9 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import AboutBlurb from "./components/AboutBlurb/AboutBlurb";
 import Layout from "./containers/Layout/Layout";
-import asyncComponent from "./components/hoc/AsyncComponent/AsyncComponent"; 
+import asyncComponent from "./components/hoc/AsyncComponent/AsyncComponent";
 
+// Lazy Loading Component 
 const asyncDiagram = asyncComponent(() => {
     return import("./containers/ThoughtTree/Diagram.js");
 });
@@ -17,7 +18,7 @@ export default class App extends Component {
             <BrowserRouter>
                 <Layout>
                     <Switch>
-                        <Route path='/' exact component={asyncDiagram}/>
+                        <Route path='/' exact component={asyncDiagram} />
                         <Route path='/test' exact render={() => (<h1>Test Routing Page</h1>)} />
                         <Route path='/about' exact component={AboutBlurb} />
                     </Switch>

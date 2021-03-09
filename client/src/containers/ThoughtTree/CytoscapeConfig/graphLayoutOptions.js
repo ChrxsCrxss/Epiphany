@@ -8,7 +8,7 @@ const graphLayoutOptions = {
 
     fit: false, // whether to fit the viewport to the graph
     directed: false, // whether the tree is directed downwards (or edges can point in any direction if false)
-    padding: 30, // padding on fit
+    padding: 50, // padding on fit
     circle: false, // put depths in concentric circles if true, put depths top down if false
     grid: false, // whether to create an even grid into which the DAG is placed (circle:false only)
     spacingFactor: 1.25, // positive spacing factor, larger => more space between nodes (N.B. n/a if causes overlap)
@@ -18,7 +18,7 @@ const graphLayoutOptions = {
     roots: undefined, // the roots of the trees
     maximal: false, // whether to shift nodes down their natural BFS depths in order to avoid upwards edges (DAGS only)
     animate: true, // whether to transition the node positions
-    animationDuration: 1000, // duration of animation in ms if enabled
+    animationDuration: 600, // duration of animation in ms if enabled
     animationEasing: undefined, // easing of animation if enabled,
     animateFilter: function (node, i) { return true; }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
     ready: undefined, // callback on layoutready

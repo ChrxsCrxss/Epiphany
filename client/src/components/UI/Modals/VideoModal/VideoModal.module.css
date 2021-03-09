@@ -7,7 +7,7 @@
     border: 1px solid #ccc;
     box-shadow: 1px 1px 1px black;
     padding: 16px;
-    
+    z-index: 100;
     left: 5%;
     bottom: 5%;
 
