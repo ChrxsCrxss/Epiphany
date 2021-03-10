@@ -134,6 +134,7 @@ class ArgumentGraph extends Component {
 
             window.clearTimeout(timeoutID);
 
+            this.getArgumentBalance(elem);
         })
 
         /**
@@ -236,6 +237,80 @@ class ArgumentGraph extends Component {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+    /**
+     * To determine if an argument map is 'balanced' we need to see how all points relate to the thesis.
+     * This method traverses the graph from root to leaves. At each point, it maps each element id to a
+     * value of +1 or -1. Any element holding a supporting argument is mapped to +1, else -1. For example,
+     * a node that opposes a node that opposes the thesis would be mapped to +1, since it undercuts a
+     * counterargument. Node that supports a node that opposes the thesis would be mapped to -1. This allows
+     * us to track the balance of the discussion using a breadth-first searching algorithm. 
+     * @param {*} elem 
+     */
+    getArgumentBalance = (elem) => {
+
+        let valance = 1;
+        let nodeValanceMap = new Map();
+        let elemIds = [];
+
+        // Start by adding the id of the element containing the thesis
+        elemIds.push(elem._private.data.id);
+
+        nodeValanceMap.set(elem._private.data.id, +1);
+
+
+        // Get the next element from the queue
+        // const curElemId = elemIds.shift();
+
+        // const incomingElems = this.myCyRef.$(curElemId).incomers();
+
+        // const incomingEdges = incomingElems.filter(elem => elem._private.group === 'edges');
+
+        const getValance = (targetArgValue, edgeType) => {
+
+            return (
+                targetArgValue === 1 && edgeType === 'support' ||
+                    targetArgValue === -1 && edgeType === 'oppose' ?
+                    1 : -1
+            );
+        }
+
+        do {
+
+            // Get the next element from the queue
+            const curElemId = elemIds.shift();
+
+            const incomingEdges = this.myCyRef.$(curElemId)
+                .incomers()
+                .filter(elem => elem._private.group === 'edges')
+                .map(elem => elem._private.data);
+
+            console.log(incomingEdges);
+
+
+            for (const edge of incomingEdges) {
+
+                const targetArgValue = nodeValanceMap.get(edge.target);
+
+                const sourceValance = getValance(targetArgValue, edge.type);
+
+                nodeValanceMap.set(edge.source, sourceValance);
+
+                // elemIds.push(edge.source);
+
+                console.log(sourceValance);
+                valance += sourceValance;
+
+            }
+
+
+
+        } while (elemIds.length > 0)
+
+        console.log(valance);
+
+    }
 
     // refactor method to reduce repetition and remove two other functions 
     loadNodes = () => {

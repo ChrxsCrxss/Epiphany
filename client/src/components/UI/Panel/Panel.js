@@ -106,23 +106,22 @@ class Panel extends Component {
 
     render() {
 
-        const content =
-            this.state.editMode ? (
-                <div>
-                    <h4>{this.props.ele._private.data.type}</h4>
-                    <form className={classes.root} noValidate autoComplete="off">
-                        <TextField id="outlined-basic" className={classes.EditBox} multiline name='title' label="Title" variant="outlined" value={this.state.updatedArgument.title} onChange={(event) => this.onChangeHandler(event)} />
-                        <TextField id="outlined-basic" className={classes.EditBox} multiline name='content' label="Content" variant="outlined" value={this.state.updatedArgument.content} onChange={(event) => this.onChangeHandler(event)} />
-                    </form>
-                </div>
-            )
-                : (
-                    <React.Fragment>
-                        <h4>{this.props.ele._private.data.type}</h4>
-                        <p>{this.props.ele._private.data.title}</p>
-                        <p>{this.props.ele._private.data.content}</p>
-                    </React.Fragment>
-                )
+        const content = (
+            <div>
+                <h4>
+                    You are currently viewing
+                        {this.props.ele._private.data.type === 'thesis' ?
+                        ` your thesis. ` :
+                        ` a ${this.props.ele._private.data.type} argument. `}
+                        Use this panel to view and edit your argument, and
+                        to add supporting materials.
+                    </h4>
+                <form className={classes.root} noValidate autoComplete="off">
+                    <TextField id="outlined-basic" className={classes.EditBox} multiline name='title' label="Title" variant="outlined" value={this.state.updatedArgument.title} onChange={(event) => this.onChangeHandler(event)} />
+                    <TextField id="outlined-basic" className={classes.EditBox} multiline name='content' label="Content" variant="outlined" value={this.state.updatedArgument.content} onChange={(event) => this.onChangeHandler(event)} />
+                </form>
+            </div>
+        )
 
 
         return (
