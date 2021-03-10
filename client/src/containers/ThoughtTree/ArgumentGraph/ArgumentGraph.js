@@ -117,6 +117,8 @@ class ArgumentGraph extends Component {
 
         this.myCyRef.on('dblclick', 'node', (event) => {
 
+            this.myCyRef.stop();
+
             const elem = this.myCyRef.$id(event.target.id());
 
             console.log(elem._private.data.text);
@@ -126,12 +128,12 @@ class ArgumentGraph extends Component {
                     eles: elem
                 }
             }, {
-                duration: 500
+                duration: 500,
+                complete: this.props.nodeClickedHandler(elem._private.data.text, elem),
             });
 
             window.clearTimeout(timeoutID);
 
-            this.props.nodeClickedHandler(elem._private.data.text, elem);
         })
 
         /**
@@ -150,6 +152,8 @@ class ArgumentGraph extends Component {
          */
         this.myCyRef.on('tap', 'node', (event) => {
 
+            this.myCyRef.stop();
+
             const elem = this.myCyRef.$id(event.target.id());
 
             console.log(elem._private.data.content);
@@ -164,7 +168,7 @@ class ArgumentGraph extends Component {
 
             window.clearTimeout(timeoutID);
 
-            // this.nodeClickedHandler(elem._private.data.text, elem.id());
+            // this.props.nodeClickedHandler(elem._private.data.text, elem.id());
 
         });
 

@@ -9,7 +9,7 @@ import InspireButton from "../../components/UI/Inspire/InspireButton";
 
 // The Layout class component is a high-order component that wraps the 
 // main componets of the application. This component allows the layout
-// to be decoupled from the actually application. 
+// to be decoupled from the actual application. 
 
 // Currently, the layout component is responsible for managing the state
 // of the video modal. It passes the toggleVideoModal method to the
