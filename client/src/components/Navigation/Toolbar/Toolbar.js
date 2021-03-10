@@ -7,8 +7,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import RemoveRedEyeTwoToneIcon from '@material-ui/icons/RemoveRedEyeTwoTone';
 import Paper from '@material-ui/core/Paper';
-import Auth from '../../../containers/Authentication/SignUp/SignUp'; 
-import { connect } from 'react-redux'; 
+import Auth from '../../../containers/Authentication/SignUp/SignUp';
+import { connect } from 'react-redux';
 import * as actions from '../../../store/actions/index';
 
 class Nav extends Component {
@@ -27,17 +27,17 @@ class Nav extends Component {
     }
 
     onSaveDiagramWrapper = () => {
-        
+
         /**
          * We want to save the diagram data as a flatten array
          */
         const diagramData = []
-        .concat( this.props.thesis.map( thesis => ({...thesis}) ) )
-        .concat( this.props.pro_arguments.map( pro_arg => ({...pro_arg}) ) )
-        .concat( this.props.con_arguments.map( con_arg => ({...con_arg}) ) )
-        .concat( this.props.qual_arguments.map( qual_arg => ({...qual_arg}) ) ); 
+            .concat(this.props.thesis.map(thesis => ({ ...thesis })))
+            .concat(this.props.pro_arguments.map(pro_arg => ({ ...pro_arg })))
+            .concat(this.props.con_arguments.map(con_arg => ({ ...con_arg })))
+            .concat(this.props.qual_arguments.map(qual_arg => ({ ...qual_arg })));
 
-        this.props.onSaveDiagram(diagramData); 
+        this.props.onSaveDiagram(diagramData);
 
 
     }
@@ -46,40 +46,38 @@ class Nav extends Component {
     render() {
         return (
             <header className={classes.Header}>
-                <Paper>
-                    <Toolbar className={classes.Toolbar}>
+                <Toolbar className={classes.Toolbar}>
 
-                        <RemoveRedEyeTwoToneIcon />
+                    <RemoveRedEyeTwoToneIcon />
 
-                        <Auth />
+                    <Auth />
 
-                        <button 
+                    <button
                         onClick={this.onSaveDiagramWrapper}
-                         >
-                            Save
+                    >
+                        Save
                         </button>
 
-                        <MenuRoundedIcon
-                            aria-controls="simple-menu"
-                            aria-haspopup="true"
-                            onClick={this.handleClick}
-                            style={{ cursor: 'pointer', color: 'red' }}
-                        />
+                    <MenuRoundedIcon
+                        aria-controls="simple-menu"
+                        aria-haspopup="true"
+                        onClick={this.handleClick}
+                        style={{ cursor: 'pointer', color: 'red' }}
+                    />
 
-                        <Menu
-                            id="simple-menu"
-                            anchorEl={this.state.anchorElem}
-                            keepMounted
-                            open={Boolean(this.state.anchorElem)}
-                            onClose={this.handleClose}
-                        >
-                            <Link to="/"><MenuItem>Home</MenuItem></Link>
-                            <Link to="/test"><MenuItem>Test</MenuItem></Link>
-                            <Link to="/about"><MenuItem>About</MenuItem></Link>
-                        </Menu>
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorElem}
+                        keepMounted
+                        open={Boolean(this.state.anchorElem)}
+                        onClose={this.handleClose}
+                    >
+                        <Link to="/"><MenuItem>Home</MenuItem></Link>
+                        <Link to="/test"><MenuItem>Test</MenuItem></Link>
+                        <Link to="/about"><MenuItem>About</MenuItem></Link>
+                    </Menu>
 
-                    </Toolbar>
-                </Paper>
+                </Toolbar>
             </header>
         )
 

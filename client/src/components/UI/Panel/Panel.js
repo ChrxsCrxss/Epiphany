@@ -6,6 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import ReplayIcon from '@material-ui/icons/Replay';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
 import Draggable, { DraggableCore } from 'react-draggable';
 import { connect } from 'react-redux';
 import * as actions from "../../../store/actions/index";
@@ -109,20 +110,9 @@ class Panel extends Component {
             this.state.editMode ? (
                 <div>
                     <h4>{this.props.ele._private.data.type}</h4>
-                    <form>
-                        <textarea
-                            className={classes.EditBox}
-                            name='title'
-                            value={this.state.updatedArgument.title}
-                            onChange={(event) => this.onChangeHandler(event)}>
-                        </textarea>
-                        <textarea
-                            className={classes.EditBox}
-                            name='content'
-                            value={this.state.updatedArgument.content}
-                            onChange={(event) => this.onChangeHandler(event)}>
-                        </textarea>
-
+                    <form className={classes.root} noValidate autoComplete="off">
+                        <TextField id="outlined-basic" className={classes.EditBox} multiline name='title' label="Title" variant="outlined" value={this.state.updatedArgument.title} onChange={(event) => this.onChangeHandler(event)} />
+                        <TextField id="outlined-basic" className={classes.EditBox} multiline name='content' label="Content" variant="outlined" value={this.state.updatedArgument.content} onChange={(event) => this.onChangeHandler(event)} />
                     </form>
                 </div>
             )
@@ -139,12 +129,12 @@ class Panel extends Component {
             <Draggable handle='#handle'>
                 <Card className={classes.Panel}>
                     <strong id='handle' className={classes.Drag_Handle}>
-                    <CloseRoundedIcon
-                        className={classes.CloseButton}
-                        onClick={this.props.close}
-                        color='secondary'
-                        size="small"
-                    />
+                        <CloseRoundedIcon
+                            className={classes.CloseButton}
+                            onClick={this.props.close}
+                            color='secondary'
+                            size="small"
+                        />
                     </strong>
                     <IconButton
                         aria-label="delete"
