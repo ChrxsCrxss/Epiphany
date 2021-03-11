@@ -32,8 +32,6 @@ class ArgumentGraph extends Component {
         cyCoreListeners: []
     }
 
-    myCyRef = React.createRef();
-
     componentDidMount() {
 
         /**
@@ -103,14 +101,17 @@ class ArgumentGraph extends Component {
         this.myCyRef._private.emitter.listeners = [];
         this.myCyRef._private.emitter.listeners = [...this.state.cyCoreListeners];
 
+        this.addCyListeners();
 
-        /**
-         * Probably need to move all the callback initializations to another function:
-         * 
-         * add dblclickcallback
-         * add tapcallback 
-         * add mouseovercallback
-         */
+        console.log(this.myCyRef);
+
+        console.log(this.myCyRef._private.emitter.listeners);
+
+        this.render();
+    }
+
+    addCyListeners() {
+
         this.myCyRef.dblclick(300);
 
         this.myCyRef.cxtmenu(this.state.ctxMenuConfiguration);
@@ -133,6 +134,14 @@ class ArgumentGraph extends Component {
             });
 
             window.clearTimeout(timeoutID);
+
+            this.props.onSaveGraph({
+                id: uuidv4(),
+                createdAt: new Date(),
+                lastModified: new Date(),
+                graphThumbNail: this.myCyRef.png(),
+                graphJSON: this.myCyRef.json()
+            });
 
             this.getArgumentBalance(elem);
         })
@@ -222,12 +231,6 @@ class ArgumentGraph extends Component {
             });
 
         });
-
-        console.log(this.myCyRef);
-
-        console.log(this.myCyRef._private.emitter.listeners);
-
-        this.render();
     }
 
 
@@ -245,7 +248,10 @@ class ArgumentGraph extends Component {
      * value of +1 or -1. Any element holding a supporting argument is mapped to +1, else -1. For example,
      * a node that opposes a node that opposes the thesis would be mapped to +1, since it undercuts a
      * counterargument. Node that supports a node that opposes the thesis would be mapped to -1. This allows
-     * us to track the balance of the discussion using a breadth-first searching algorithm. 
+     * us to track the balance of the discussion using a breadth-first traverse.
+     * 
+     * A next step will be to call this method each time a node is added, and update the valance 
+     * so that the user can see it.  
      * @param {*} elem 
      */
     getArgumentBalance = (elem) => {
@@ -528,7 +534,6 @@ class ArgumentGraph extends Component {
 
     }
 
-
     /**
  * 
  * @param {*} nodeInitInfo
@@ -671,6 +676,7 @@ const mapDispatchToProps = dispatch => {
     return {
         onDynamicAddNode: (payload) => dispatch(actions.addArgument(payload)),
         onSetTargetArgument: (ele, updatedArgument) => dispatch(actions.updateArgument(ele, updatedArgument)),
+        onSaveGraph: (graphJSON) => dispatch(actions.saveDiagram(graphJSON)),
     };
 }
 

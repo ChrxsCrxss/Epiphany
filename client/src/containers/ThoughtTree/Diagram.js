@@ -101,7 +101,7 @@ class Diagram extends Component {
 
                     {this.state.showPanel ?
                         <motion.div
-                            initial={{ x: 500}}
+                            initial={{ x: 500 }}
                             animate={{ x: 0 }}
                         >
                             <Panel

@@ -11,6 +11,10 @@ const asyncDiagram = asyncComponent(() => {
     return import("./containers/ThoughtTree/Diagram.js");
 });
 
+const asyncProfile = asyncComponent(() => {
+    return import("./containers/Profile/profile.js");
+});
+
 export default class App extends Component {
 
     render() {
@@ -19,6 +23,7 @@ export default class App extends Component {
                 <Layout>
                     <Switch>
                         <Route path='/' exact component={asyncDiagram} />
+                        <Route path='/profile' exact component={asyncProfile} />
                         <Route path='/test' exact render={() => (<h1>Test Routing Page</h1>)} />
                         <Route path='/about' exact component={AboutBlurb} />
                     </Switch>

@@ -8,11 +8,10 @@ const initialState = {
      * component. Each element inside each inne array is an 
      * argument 
      */
-    argumentDiagrams : {},
-    cyCoreRef : null
+    argumentGraphs: [],
 }
 
-// argumentDiagrams : [ 
+// argumentGraphs : [ 
 //     {
 //         thesis : [{}],
 //         pro_arguments: [{}],
@@ -31,27 +30,24 @@ const graphReducer = (state = initialState, action) => {
     if (action.type === 'PUSH') {
         return {
             state,
-            argumentDiagrams : state.argumentDiagrams.concat(action.payload)
+            argumentGraphs: state.argumentGraphs.concat(action.payload)
         }
     }
 
     if (action.type === actionTypes.SAVE_DIAGRAM) {
 
         console.log('called SAVE_DIAGRAM');
-        
 
-        console.log(action); 
+
+        console.log(action.payload);
         return {
             ...state,
-            argumentDiagrams : {
-                ...state.argumentDiagrams,
-                [uuidv4()] : action.payload 
-            }
+            argumentGraphs: [...state.argumentGraphs, action.payload]
         }
     }
 
 
-    return state; 
+    return state;
 }
 
 export default graphReducer; 
