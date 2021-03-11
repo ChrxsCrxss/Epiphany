@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import { connect } from 'react-redux';
+import { Link } from "react-router-dom";
 
 class Profile extends Component {
 
@@ -22,6 +23,8 @@ class Profile extends Component {
                 <Grid key={graph.id} item xs>
                     <Paper className={classes.paper}>
                         <img src={graph.graphThumbNail} alt="GRAPH JSON" width="100%" height="100%"></img>
+                        <hr />
+                        <Link to={{ pathname: `sandbox/${graph.id}` }}>Open</Link>
                     </Paper>
                 </Grid>
 

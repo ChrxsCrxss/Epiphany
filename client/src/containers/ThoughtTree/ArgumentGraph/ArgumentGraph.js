@@ -24,7 +24,6 @@ cytoscape.use(dblclick);
 
 class ArgumentGraph extends Component {
 
-
     state = {
         currentThesisNodeID: null,
         ctxMenuConfiguration: null,
@@ -326,14 +325,14 @@ class ArgumentGraph extends Component {
          * must come before all 1st degree arguments, all 2nd degree
          * arguments before 3rd degree arguments, etc.
          */
-        const staticArguments = []
-            .concat(this.props.thesis)
-            .concat(this.props.qual_arguments)
-            .concat(this.props.pro_arguments)
-            .concat(this.props.con_arguments)
-            .sort((arga, argb) => arga.degree - argb.degree);
+        // const staticArguments = []
+        //     .concat(this.props.thesis)
+        //     .concat(this.props.qual_arguments)
+        //     .concat(this.props.pro_arguments)
+        //     .concat(this.props.con_arguments)
+        //     .sort((arga, argb) => arga.degree - argb.degree);
 
-        if (staticArguments.length === 0) {
+        if (this.props.selectedGraphElements.nodes.length === 0) {
 
             const id = uuidv4()
             this.addNode({
@@ -353,47 +352,47 @@ class ArgumentGraph extends Component {
 
 
 
-        for (let idx = 0; idx < staticArguments.length; ++idx) {
+        // for (let idx = 0; idx < staticArguments.length; ++idx) {
 
-            const argType = staticArguments[idx].type;
-            switch (argType) {
-                case 'thesis':
-                    this.addNode({
-                        creationMethod: 'static',
-                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
-                        edgeType: 'qualify',
-                        argumentData: staticArguments[idx]
-                    });
-                    break;
-                case 'qual_arguments':
-                    this.addNode({
-                        creationMethod: 'static',
-                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
-                        edgeType: 'qualify',
-                        argumentData: staticArguments[idx]
-                    });
-                    break;
-                case 'pro_arguments':
-                    this.addNode({
-                        creationMethod: 'static',
-                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
-                        edgeType: 'support',
-                        argumentData: staticArguments[idx]
-                    });
-                    break;
-                case 'con_arguments':
-                    this.addNode({
-                        creationMethod: 'static',
-                        targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
-                        edgeType: 'oppose',
-                        argumentData: staticArguments[idx]
-                    });
-                    break;
-                default:
-                    console.log('static argument type:', argType);
-                    throw Error('Cannot load static argument data: unknown argument type');
-            }
-        }
+        //     const argType = staticArguments[idx].type;
+        //     switch (argType) {
+        //         case 'thesis':
+        //             this.addNode({
+        //                 creationMethod: 'static',
+        //                 targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+        //                 edgeType: 'qualify',
+        //                 argumentData: staticArguments[idx]
+        //             });
+        //             break;
+        //         case 'qual_arguments':
+        //             this.addNode({
+        //                 creationMethod: 'static',
+        //                 targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+        //                 edgeType: 'qualify',
+        //                 argumentData: staticArguments[idx]
+        //             });
+        //             break;
+        //         case 'pro_arguments':
+        //             this.addNode({
+        //                 creationMethod: 'static',
+        //                 targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+        //                 edgeType: 'support',
+        //                 argumentData: staticArguments[idx]
+        //             });
+        //             break;
+        //         case 'con_arguments':
+        //             this.addNode({
+        //                 creationMethod: 'static',
+        //                 targetEleID: staticArguments[idx].targetArgument || this.state.currentThesisNodeID,
+        //                 edgeType: 'oppose',
+        //                 argumentData: staticArguments[idx]
+        //             });
+        //             break;
+        //         default:
+        //             console.log('static argument type:', argType);
+        //             throw Error('Cannot load static argument data: unknown argument type');
+        //     }
+        // }
 
     }
 
@@ -654,7 +653,10 @@ class ArgumentGraph extends Component {
                     // The default action of the cytoscape package seems to be to place two
                     // nodes in the graph if no application data is provided. This call to
                     // normalizeElements prevents that action. 
-                    elements={CytoscapeComponent.normalizeElements({ nodes: [], edges: [] })}
+                    elements={CytoscapeComponent.normalizeElements({
+                        nodes: [...this.props.selectedGraphElements.nodes],
+                        edges: [...this.props.selectedGraphElements.edges],
+                    })}
 
                     // use extensions by accessing the core object using the cy prop 
                     cy={cy => {

@@ -1,3 +1,7 @@
 .profile-container {
   margin-top: 64;
 }
+
+.paper:hover {
+  transform: scale(1.2);
+}

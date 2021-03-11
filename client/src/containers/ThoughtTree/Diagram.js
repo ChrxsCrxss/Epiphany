@@ -6,7 +6,7 @@ import ArgumentGraph from './ArgumentGraph/ArgumentGraph';
 import axios from "axios";
 import withErrorHandler from '../../components/hoc/withErrorHandler'
 import { motion } from "framer-motion"
-
+import { connect } from 'react-redux';
 
 const instance = axios.create();
 
@@ -29,6 +29,7 @@ class Diagram extends Component {
         mapGridSize: 12,
         panelGridSize: 5,
         currentEleInPanel: null,
+        selectedGraph: {},
 
         updateNode: () => { throw Error('callback undefined'); },
         deleteNode: () => { throw Error('callback undefined'); },
@@ -46,6 +47,12 @@ class Diagram extends Component {
         // });
 
         // alert(response);
+
+        console.log('Navigated to Diagram Page');
+
+
+        console.log("graph id " + this.props.match.params.id)
+        console.log(this.props.selectedGraph);
     }
 
 
@@ -84,6 +91,17 @@ class Diagram extends Component {
 
     render() {
 
+        let selectedGraphElements =
+            this.props.selectedGraph ?
+                {
+                    edges: this.props.selectedGraph.graphJSON.elements.edges,
+                    nodes: this.props.selectedGraph.graphJSON.elements.nodes,
+                }
+                : {
+                    edges: [],
+                    nodes: [],
+                }
+
 
         return (
 
@@ -95,6 +113,7 @@ class Diagram extends Component {
                             <ArgumentGraph
                                 nodeClickedHandler={this.nodeClickedHandler}
                                 setNodeCallbacks={this.setNodeCallbacks}
+                                selectedGraphElements={selectedGraphElements}
                             />
                         </Card>
                     </Grid>
@@ -122,5 +141,9 @@ class Diagram extends Component {
     }
 }
 
-
-export default withErrorHandler(Diagram, instance); 
+export default
+    connect((state, props) => ({
+        selectedGraph: state.graphReducer.argumentGraphs.find(graph =>
+            graph.id === props.match.params.id
+        )
+    }))(Diagram)

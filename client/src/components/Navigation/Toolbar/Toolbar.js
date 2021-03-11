@@ -73,8 +73,8 @@ class Nav extends Component {
                         onClose={this.handleClose}
                     >
                         <Link to="/"><MenuItem>Home</MenuItem></Link>
+                        <Link to="/sandbox"><MenuItem>Sandbox</MenuItem></Link>
                         <Link to="/profile"><MenuItem>Profile</MenuItem></Link>
-                        <Link to="/test"><MenuItem>Test</MenuItem></Link>
                         <Link to="/about"><MenuItem>About</MenuItem></Link>
                     </Menu>
 

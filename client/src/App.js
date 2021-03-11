@@ -22,7 +22,8 @@ export default class App extends Component {
             <BrowserRouter>
                 <Layout>
                     <Switch>
-                        <Route path='/' exact component={asyncDiagram} />
+                        <Route path='/sandbox' exact component={asyncDiagram} />
+                        <Route path='/sandbox/:id' exact component={asyncDiagram} />
                         <Route path='/profile' exact component={asyncProfile} />
                         <Route path='/test' exact render={() => (<h1>Test Routing Page</h1>)} />
                         <Route path='/about' exact component={AboutBlurb} />
